@@ -250,54 +250,70 @@ export default function SettingsPage() {
 
                 const response = await createSubscriptionOrder(plan);
                 const planName = subscriptionPlans.find((item) => item.key === plan)?.name ?? plan;
-                const options = {
-                key: response.keyId,
-                amount: response.order.amount,
-                currency: response.order.currency,
-                name: "Twitter Subscription",
-                description: `${planName} subscription`,
-                order_id: response.order.id,
-                handler: (razorpayResponse: Record<string, string>) => {
-                    void (async () => {
-                        const activation = await activateSubscription(plan, {
-                            razorpayPaymentId: razorpayResponse.razorpay_payment_id ?? "",
-                            razorpayOrderId: razorpayResponse.razorpay_order_id ?? response.order.id,
-                            razorpaySignature: razorpayResponse.razorpay_signature ?? "",
-                        });
 
-                        await refreshToken();
-                        setSelectedPlan(plan);
-                        setActivatedSubscription({
-                            plan,
-                            email: token.email ?? "",
+                const isDevMock = response.order?.id?.startsWith("order_dev_") || response.keyId?.includes("placeholder");
+
+                const options = {
+                    key: response.keyId,
+                    amount: response.order.amount,
+                    currency: response.order.currency,
+                    name: "Twitter Subscription",
+                    description: `${planName} subscription`,
+                    order_id: response.order.id,
+                    handler: (razorpayResponse: Record<string, string>) => {
+                        void (async () => {
+                            const activation = await activateSubscription(plan, {
+                                razorpayPaymentId: razorpayResponse.razorpay_payment_id ?? `pay_dev_${Date.now()}`,
+                                razorpayOrderId: razorpayResponse.razorpay_order_id ?? response.order.id,
+                                razorpaySignature: razorpayResponse.razorpay_signature ?? "sig_dev_mock",
+                            });
+
+                            await refreshToken();
+                            setSelectedPlan(plan);
+                            setActivatedSubscription({
+                                plan,
+                                email: token.email ?? "",
+                            });
+                            setPaymentMessage(`Subscription activated successfully for ${planName} plan.`);
+                            setPaymentToastOpen(true);
+                        })().catch((error: unknown) => {
+                            setActivatedSubscription(null);
+                            setPaymentMessage(error instanceof Error ? error.message : "Something went wrong.");
+                            setPaymentToastOpen(true);
                         });
-                        setPaymentMessage(`Subscription activated successfully for ${planName} plan.`);
-                    })().catch((error: unknown) => {
-                        setActivatedSubscription(null);
-                        setPaymentMessage(error instanceof Error ? error.message : "Something went wrong.");
-                    });
-                },
-                prefill: {
-                    name: token.name ?? token.username,
-                    email: token.email ?? "",
-                    contact: token.phone ?? "",
-                },
-                notes: {
-                    username: token.username,
-                    plan,
-                },
-                theme: {
-                    color: "#1d9bf0",
-                },
-            };
+                    },
+                    prefill: {
+                        name: token.name ?? token.username,
+                        email: token.email ?? "",
+                        contact: token.phone ?? "",
+                    },
+                    notes: {
+                        username: token.username,
+                        plan,
+                    },
+                    theme: {
+                        color: "#1d9bf0",
+                    },
+                };
 
                 setSelectedPlan(plan);
+
+                if (isDevMock) {
+                    console.log("[Dev Mode] Auto-activating mock subscription order:", response.order.id);
+                    options.handler({
+                        razorpay_payment_id: `pay_dev_${Date.now()}`,
+                        razorpay_order_id: response.order.id,
+                        razorpay_signature: "sig_dev_mock",
+                    });
+                    return;
+                }
+
                 const Razorpay = window.Razorpay;
                 if (!Razorpay) {
                     throw new Error("Razorpay checkout is unavailable.");
                 }
-            const razorpay = new Razorpay(options);
-            razorpay.open();
+                const razorpay = new Razorpay(options);
+                razorpay.open();
         } catch (error) {
             setSelectedPlan(plan);
             setActivatedSubscription(null);

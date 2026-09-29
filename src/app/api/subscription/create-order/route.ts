@@ -33,15 +33,28 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: false, message: "You are not authorized to perform this action." }, { status: 401 });
     }
 
-    const keyId = process.env.RAZORPAY_KEY_ID;
-    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    const keyId = process.env.RAZORPAY_KEY_ID || "";
+    const keySecret = process.env.RAZORPAY_KEY_SECRET || "";
+    const isPlaceholderKey = !keyId || !keySecret || keyId.startsWith("your-") || keySecret.startsWith("your-");
 
-    if (!keyId || !keySecret) {
-        return NextResponse.json({ success: false, message: "Razorpay credentials are missing." }, { status: 500 });
+    const amount = PLAN_AMOUNTS[plan as SubscriptionPlan];
+
+    if (isPlaceholderKey && process.env.NODE_ENV === "development") {
+        console.warn("[Razorpay Dev Mode] Using local mock order because Razorpay credentials are placeholder.");
+        return NextResponse.json({
+            success: true,
+            keyId: "rzp_test_dev_placeholder",
+            order: {
+                id: `order_dev_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+                amount: amount * 100,
+                currency: "INR",
+            },
+            plan,
+            amount: amount * 100,
+        });
     }
 
     try {
-        const amount = PLAN_AMOUNTS[plan as SubscriptionPlan];
         const orderResponse = await fetch("https://api.razorpay.com/v1/orders", {
             method: "POST",
             headers: {
@@ -64,7 +77,21 @@ export async function POST(request: NextRequest) {
 
         if (!orderResponse.ok) {
             const message = order?.error?.description || order?.error?.message || "Unable to create Razorpay order.";
-            return NextResponse.json({ success: false, message }, { status: 502 });
+            if (process.env.NODE_ENV === "development") {
+                console.warn("[Razorpay Dev Mode] Razorpay API rejected request:", message, "- falling back to dev mock order.");
+                return NextResponse.json({
+                    success: true,
+                    keyId: keyId || "rzp_test_dev_placeholder",
+                    order: {
+                        id: `order_dev_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+                        amount: amount * 100,
+                        currency: "INR",
+                    },
+                    plan,
+                    amount: amount * 100,
+                });
+            }
+            return NextResponse.json({ success: false, message: `Razorpay Error: ${message}` }, { status: 502 });
         }
 
         return NextResponse.json({
