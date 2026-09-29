@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     const verifiedToken = token ? ((await verifyJwtToken(token, request.nextUrl.origin)) as unknown as UserProps) : null;
 
     if (!verifiedToken)
-        return NextResponse.json({ success: false, message: "You are not authorized to perform this action." });
+        return NextResponse.json({ success: false, message: "You are not authorized to perform this action." }, { status: 401 });
 
     try {
         await prisma.notification.updateMany({
@@ -25,6 +25,6 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ success: true });
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Failed to mark notifications read.";
-        return NextResponse.json({ success: false, message });
+        return NextResponse.json({ success: false, message }, { status: 500 });
     }
 }

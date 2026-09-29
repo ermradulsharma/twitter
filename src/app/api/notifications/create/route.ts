@@ -7,14 +7,14 @@ export async function POST(request: NextRequest) {
     const { recipientId, recipient, type, secret, notificationContent }: NotificationProps & { recipientId?: string } = await request.json();
 
     if (secret !== process.env.CREATION_SECRET_KEY) {
-        return NextResponse.json({ success: false, error: "Invalid secret." });
+        return NextResponse.json({ success: false, message: "Invalid secret." }, { status: 401 });
     }
 
     const resolvedRecipientId = recipientId;
     const resolvedRecipientUsername = recipient;
 
     if (!resolvedRecipientId && !resolvedRecipientUsername) {
-        return NextResponse.json({ success: false, error: "Recipient is required." });
+        return NextResponse.json({ success: false, message: "Recipient is required." }, { status: 400 });
     }
 
     try {
@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
         });
         return NextResponse.json({ success: true });
     } catch (error: unknown) {
-        return NextResponse.json({ success: false, error });
+        const message = error instanceof Error ? error.message : "Failed to create notification.";
+        return NextResponse.json({ success: false, message }, { status: 500 });
     }
 }
