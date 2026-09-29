@@ -1,0 +1,138 @@
+import { useContext, useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { motion } from "framer-motion";
+import { RiRepeat2Line } from "react-icons/ri";
+
+import { TweetOptionsProps } from "@/types/TweetProps";
+import { AuthContext } from "@/context/AuthContext";
+import { getUserTweet, updateRetweets } from "@/utilities/fetch";
+import { SnackbarProps } from "@/types/SnackbarProps";
+import CustomSnackbar from "../misc/CustomSnackbar";
+
+export default function Retweet({ tweetId, tweetAuthor }: TweetOptionsProps) {
+    const [isRetweeted, setIsRetweeted] = useState(false);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [snackbar, setSnackbar] = useState<SnackbarProps>({ message: "", severity: "success", open: false });
+
+    const { token, isPending } = useContext(AuthContext);
+    const queryClient = useQueryClient();
+
+    const queryKey = ["tweets", tweetAuthor, tweetId];
+
+    const { isFetched, data } = useQuery({
+        queryKey: queryKey,
+        queryFn: () => getUserTweet(tweetId, tweetAuthor),
+    });
+
+    const mutation = useMutation({
+        mutationFn: (variables: any) => updateRetweets(tweetId, tweetAuthor, variables.tokenOwnerId, variables.isRetweeted),
+        onMutate: () => {
+            setIsButtonDisabled(true);
+            setIsRetweeted(!isRetweeted);
+        },
+        onSuccess: () => {
+            setIsButtonDisabled(false);
+            queryClient.invalidateQueries({ queryKey: ["tweets"] });
+        },
+        onError: (error) => console.log(error),
+    });
+
+    const handleRetweet = () => {
+        if (!token) {
+            return setSnackbar({
+                message: "You need to login to retweet.",
+                severity: "info",
+                open: true,
+            });
+        }
+
+        if (mutation.isLoading) return;
+
+        const tokenOwnerId = JSON.stringify(token?.id);
+        const retweetedBy = data?.tweet?.retweetedBy;
+        const isRetweetedBy = retweetedBy?.some((user: { id: string }) => JSON.stringify(user.id) === tokenOwnerId);
+
+        if (isRetweeted !== isRetweetedBy) setIsRetweeted(isRetweetedBy);
+
+        const variables = {
+            tokenOwnerId,
+            isRetweeted,
+        };
+
+        mutation.mutate(variables);
+    };
+
+    useEffect(() => {
+        if (!isPending && isFetched) {
+            const tokenOwnerId = JSON.stringify(token?.id);
+            const retweetedBy = data?.tweet?.retweetedBy;
+            const isRetweetedBy = retweetedBy?.some((user: { id: string }) => JSON.stringify(user.id) === tokenOwnerId);
+            setIsRetweeted(isRetweetedBy);
+        }
+    }, [isPending, isFetched, data]);
+
+    return (
+        <>
+            <motion.button
+                className={`icon retweet x-action-btn ${isRetweeted ? "active" : ""}`}
+                onClick={handleRetweet}
+                whileTap={{ scale: 0.9 }}
+                animate={{ scale: isRetweeted ? [1, 1.5, 1.2, 1] : 1 }}
+                transition={{ duration: 0.25 }}
+                disabled={isButtonDisabled}
+            >
+                <span className="x-icon-circle">
+                    <motion.span animate={{ scale: [1, 1.5, 1.2, 1] }} transition={{ duration: 0.25 }}>
+                        <RiRepeat2Line />
+                    </motion.span>
+                </span>
+                <motion.span animate={{ scale: isRetweeted ? [0, 1.2, 1] : 0 }} transition={{ duration: 0.25 }} />
+                {data?.tweet?.retweetedBy?.length === 0 ? null : (
+                    <span className="count x-action-count">{data?.tweet?.retweetedBy?.length}</span>
+                )}
+            </motion.button>
+            {snackbar.open && (
+                <CustomSnackbar message={snackbar.message} severity={snackbar.severity} setSnackbar={setSnackbar} />
+            )}
+            <style jsx>{`
+                .x-action-btn {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    color: rgb(113, 118, 123);
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    padding: 0;
+                    min-height: 34px;
+                }
+                .x-icon-circle {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 34px;
+                    height: 34px;
+                    border-radius: 50%;
+                    font-size: 19px;
+                    transition: background-color 150ms ease, color 150ms ease;
+                }
+                .x-action-count {
+                    font-size: 13px;
+                    font-weight: 500;
+                    transition: color 150ms ease;
+                }
+                .retweet:hover .x-icon-circle {
+                    background-color: rgba(0, 186, 124, 0.12);
+                    color: rgb(0, 186, 124);
+                }
+                .retweet:hover .x-action-count {
+                    color: rgb(0, 186, 124);
+                }
+                .retweet.active .x-icon-circle,
+                .retweet.active .x-action-count {
+                    color: rgb(0, 186, 124);
+                }
+            `}</style>
+        </>
+    );
+}

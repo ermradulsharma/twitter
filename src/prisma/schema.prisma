@@ -1,0 +1,147 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider          = "postgresql"
+    url               = env("DATABASE_URL")
+    directUrl         = env("DIRECT_DATABASE_URL")
+}
+
+enum SubscriptionPlan {
+    FREE
+    BRONZE
+    SILVER
+    GOLD
+}
+
+model User {
+    id               String         @id @default(uuid())
+    name             String?        @db.VarChar(50)
+    description      String?        @db.VarChar(160)
+    location         String?        @db.VarChar(30)
+    website          String?        @db.VarChar(30)
+    photoUrl         String?
+    headerUrl        String?
+    username         String         @unique @db.VarChar(20)
+    email            String?
+    phone            String?
+    password         String
+    isPremium        Boolean        @default(false)
+    browserNotificationsEnabled Boolean @default(false)
+    preferredLanguage String        @default("en") @db.VarChar(10)
+    subscriptionPlan SubscriptionPlan @default(FREE)
+    subscriptionExpiry DateTime?
+    monthlyTweetCount Int            @default(0)
+    lastTweetResetAt  DateTime       @default(now())
+    lastPasswordResetAt DateTime?
+    createdAt        DateTime       @default(now())
+    updatedAt        DateTime       @default(now()) @updatedAt
+    createdTweets    Tweet[]        @relation("userTweets")
+    retweets         Tweet[]        @relation("userRetweets")
+    likedTweets      Tweet[]        @relation("userLikes")
+    following        User[]         @relation("userFollows")
+    followers        User[]         @relation("userFollows")
+    sentMessages     Message[]      @relation("userMessagesSent")
+    receivedMessages Message[]      @relation("userMessagesRecieved")
+    notifications    Notification[]
+    loginHistories   LoginHistory[]
+    bookmarks        Bookmark[]
+
+    @@index([email])
+    @@index([phone])
+    @@index([subscriptionExpiry])
+}
+
+model Tweet {
+    id          String   @id @default(uuid())
+    text        String   @db.VarChar(280)
+    createdAt   DateTime @default(now())
+    author      User     @relation("userTweets", fields: [authorId], references: [id])
+    authorId    String
+    photoUrl    String?
+    audioUrl    String?
+    likedBy     User[]   @relation("userLikes")
+    retweetedBy User[]   @relation("userRetweets")
+    bookmarks   Bookmark[]
+    replies     Tweet[]  @relation("tweetReplies")
+    retweets    Tweet[]  @relation("retweetOf")
+    isRetweet   Boolean  @default(false)
+    retweetOf   Tweet?   @relation("retweetOf", fields: [retweetOfId], references: [id], onDelete: Cascade)
+    retweetOfId String?
+    isReply     Boolean  @default(false)
+    repliedTo   Tweet?   @relation("tweetReplies", fields: [repliedToId], references: [id], onDelete: Cascade)
+    repliedToId String?
+
+    @@index([authorId])
+    @@index([createdAt])
+}
+
+model Message {
+    id          String   @id @default(uuid())
+    text        String   @db.VarChar(280)
+    createdAt   DateTime @default(now())
+    sender      User     @relation("userMessagesSent", fields: [senderId], references: [id])
+    senderId    String
+    recipient   User     @relation("userMessagesRecieved", fields: [recipientId], references: [id])
+    recipientId String
+    photoUrl    String?
+
+    @@index([senderId])
+    @@index([recipientId])
+    @@index([createdAt])
+}
+
+model Notification {
+    id        String   @id @default(uuid())
+    type      String   @db.VarChar(20)
+    content   String
+    createdAt DateTime @default(now())
+    isRead    Boolean  @default(false)
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
+
+    @@index([userId])
+    @@index([createdAt])
+}
+
+model LoginHistory {
+    id               String   @id @default(uuid())
+    browser          String   @db.VarChar(100)
+    operatingSystem  String   @db.VarChar(100)
+    deviceType       String   @db.VarChar(50)
+    ipAddress        String   @db.VarChar(45)
+    loginTime        DateTime @default(now())
+    user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId           String
+
+    @@index([userId])
+    @@index([loginTime])
+}
+
+model Bookmark {
+    id        String   @id @default(uuid())
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId    String
+    tweet     Tweet    @relation(fields: [tweetId], references: [id], onDelete: Cascade)
+    tweetId   String
+    createdAt DateTime @default(now())
+
+    @@unique([userId, tweetId])
+    @@index([userId])
+    @@index([tweetId])
+}
+
+model VerificationToken {
+    id         String   @id @default(uuid())
+    identifier String
+    token      String
+    type       String   @db.VarChar(30)
+    expiresAt  DateTime
+    createdAt  DateTime @default(now())
+    metadata   String?
+
+    @@index([identifier, type])
+    @@index([expiresAt])
+}
+
