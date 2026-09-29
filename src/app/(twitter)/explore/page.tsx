@@ -13,25 +13,27 @@ import CircularLoading from "@/components/misc/CircularLoading";
 export default function ExplorePage() {
     const { token, isPending } = useContext(AuthContext);
 
-    const { data, fetchNextPage, isLoading, hasNextPage } = useInfiniteQuery(
-        ["tweets"],
-        async ({ pageParam = 1 }) => getAllTweets(pageParam),
-        {
-            getNextPageParam: (lastResponse) => {
-                if (lastResponse.nextPage > lastResponse.lastPage) return false;
-                return lastResponse.nextPage;
-            },
-        }
-    );
+    const { data, fetchNextPage, isLoading, hasNextPage } = useInfiniteQuery({
+        queryKey: ["tweets"],
+        queryFn: async ({ pageParam = 1 }) => getAllTweets(String(pageParam)),
+        initialPageParam: 1,
+        getNextPageParam: (lastResponse) => {
+            if (!lastResponse || lastResponse.nextPage > lastResponse.lastPage) return undefined;
+            return lastResponse.nextPage;
+        },
+    });
 
     const tweetsResponse = useMemo(
         () =>
-            data?.pages.reduce((prev, page) => {
-                return {
-                    nextPage: page.nextPage,
-                    tweets: [...prev.tweets, ...page.tweets],
-                };
-            }),
+            data?.pages.reduce(
+                (prev, page) => {
+                    return {
+                        nextPage: page.nextPage,
+                        tweets: [...prev.tweets, ...(page?.tweets || [])],
+                    };
+                },
+                { nextPage: 1, tweets: [] as any[] }
+            ),
         [data]
     );
 

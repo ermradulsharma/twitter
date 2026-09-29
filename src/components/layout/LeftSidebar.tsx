@@ -167,7 +167,7 @@ export default function LeftSidebar() {
                                     onClose={handleAnchorClose}
                                     open={Boolean(anchorEl)}
                                     classes={{ paper: "profile-menu-paper", list: "profile-menu-list" }}
-                                    MenuListProps={{ disablePadding: true }}
+                                    slotProps={{ list: { disablePadding: true } }}
                                     anchorOrigin={{
                                         vertical: "bottom",
                                         horizontal: "right",

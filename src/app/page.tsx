@@ -41,10 +41,10 @@ export default function RootPage() {
                 password:
                     loginStep === 2
                         ? yup
-                              .string()
-                              .min(8, "Password should be of minimum 8 characters length.")
-                              .max(100, "Password should be of maximum 100 characters length.")
-                              .required("Password is required.")
+                            .string()
+                            .min(8, "Password should be of minimum 8 characters length.")
+                            .max(100, "Password should be of maximum 100 characters length.")
+                            .required("Password is required.")
                         : yup.string().notRequired(),
             }),
         [loginStep]
@@ -82,11 +82,11 @@ export default function RootPage() {
                 return;
             }
 
-                            setPendingOtp(null);
-                            setPendingOtpExpiresAt(0);
-                            setOtp("");
-                            setLoginStep(1);
-                            resetForm();
+            setPendingOtp(null);
+            setPendingOtpExpiresAt(0);
+            setOtp("");
+            setLoginStep(1);
+            resetForm();
             router.push("/explore");
         },
     });
@@ -156,6 +156,23 @@ export default function RootPage() {
                                 <FaApple />
                                 {t("auth.continueWithApple")}
                             </Button>
+                            <Button
+                                className="x-btn x-btn-primary"
+                                variant="contained"
+                                onClick={handleSignUpClick}
+                                sx={{
+                                    borderRadius: 999,
+                                    fontWeight: 700,
+                                    py: 1.1,
+                                    fontSize: "0.95rem",
+                                    textTransform: "none",
+                                    background: "#1d9bf0",
+                                    color: "#fff",
+                                    "&:hover": { background: "#1a8cd8" },
+                                }}
+                            >
+                                {t("actions.createAccount")}
+                            </Button>
                         </Stack>
                         <Divider className="x-divider">
                             <span>{t("auth.or")}</span>
@@ -196,31 +213,31 @@ export default function RootPage() {
                                             <OtpVerificationCard
                                                 title="Verify your identity"
                                                 subtitle="We've sent a 6-digit verification code to"
-                                            destinationValue={pendingOtp}
-                                            expiresAt={pendingOtpExpiresAt}
-                                            otp={otp}
-                                            setOtp={setOtp}
-                                            onVerify={handleVerifyOtp}
-                                            onCancel={handleBack}
-                                            onResend={async () => {
-                                                const response = await logIn(JSON.stringify(formik.values));
-                                                if (!response.success) {
-                                                    setSnackbar({ message: response.message, severity: "error", open: true });
-                                                    return;
-                                                }
-                                                setPendingOtp(response.username ?? formik.values.identifier);
-                                                setPendingOtpExpiresAt(new Date(response.expiresAt).getTime());
-                                                setOtp("");
-                                                setSnackbar({
-                                                    message: response.message ?? "New verification code sent.",
-                                                    severity: "success",
-                                                    open: true,
-                                                });
-                                            }}
-                                            loading={formik.isSubmitting}
-                                            verifyLabel="Verify Code"
-                                        />
-                                    )}
+                                                destinationValue={pendingOtp}
+                                                expiresAt={pendingOtpExpiresAt}
+                                                otp={otp}
+                                                setOtp={setOtp}
+                                                onVerify={handleVerifyOtp}
+                                                onCancel={handleBack}
+                                                onResend={async () => {
+                                                    const response = await logIn(JSON.stringify(formik.values));
+                                                    if (!response.success) {
+                                                        setSnackbar({ message: response.message, severity: "error", open: true });
+                                                        return;
+                                                    }
+                                                    setPendingOtp(response.username ?? formik.values.identifier);
+                                                    setPendingOtpExpiresAt(new Date(response.expiresAt).getTime());
+                                                    setOtp("");
+                                                    setSnackbar({
+                                                        message: response.message ?? "New verification code sent.",
+                                                        severity: "success",
+                                                        open: true,
+                                                    });
+                                                }}
+                                                loading={formik.isSubmitting}
+                                                verifyLabel="Verify Code"
+                                            />
+                                        )}
                                     </>
                                 )}
                                 {loginStep === 2 && (

@@ -7,13 +7,16 @@ import Profile from "@/components/user/Profile";
 import CircularLoading from "@/components/misc/CircularLoading";
 import { getUser } from "@/utilities/fetch";
 
+import { use } from "react";
+
 export default function ProfileLayout({
     children,
-    params: { username },
+    params,
 }: {
     children: React.ReactNode;
-    params: { username: string };
+    params: Promise<{ username: string }>;
 }) {
+    const { username } = use(params);
     const { isLoading, isFetched, data } = useQuery({
         queryKey: ["users", username],
         queryFn: () => getUser(username),

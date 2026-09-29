@@ -77,32 +77,40 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
         },
         validationSchema: validationSchema,
         onSubmit: async (values) => {
-            if (headerFile) {
-                const path: string | void = await uploadFile(headerFile);
-                if (!path) throw new Error("Header upload failed.");
-                values.headerUrl = path;
-            }
-            if (photoFile) {
-                const path: string | void = await uploadFile(photoFile);
-                if (!path) throw new Error("Photo upload failed.");
-                values.photoUrl = path;
-            }
-            const jsonValues = JSON.stringify(values);
-            const response = await editUser(jsonValues, profile.username);
-            if (!response.success) {
-                return setSnackbar({
-                    message: t("profile.updateFailed"),
+            try {
+                if (headerFile) {
+                    const path: string | void = await uploadFile(headerFile);
+                    if (!path) throw new Error("Header upload failed.");
+                    values.headerUrl = path;
+                }
+                if (photoFile) {
+                    const path: string | void = await uploadFile(photoFile);
+                    if (!path) throw new Error("Photo upload failed.");
+                    values.photoUrl = path;
+                }
+                const jsonValues = JSON.stringify(values);
+                const response = await editUser(jsonValues, profile.username);
+                if (!response?.success) {
+                    return setSnackbar({
+                        message: response?.message || t("profile.updateFailed"),
+                        severity: "error",
+                        open: true,
+                    });
+                }
+                setSnackbar({
+                    message: t("profile.updated"),
+                    severity: "success",
+                    open: true,
+                });
+                refreshToken();
+                queryClient.invalidateQueries({ queryKey: ["users", profile.username] });
+            } catch (err: any) {
+                setSnackbar({
+                    message: err.message || t("profile.updateFailed"),
                     severity: "error",
                     open: true,
                 });
             }
-            setSnackbar({
-                message: t("profile.updated"),
-                severity: "success",
-                open: true,
-            });
-            refreshToken();
-            queryClient.invalidateQueries({ queryKey: ["users", profile.username] });
         },
     });
 
@@ -153,6 +161,9 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                                 : "/assets/header.jpg"
                     }
                     fill
+                    priority
+                    sizes="(max-width: 768px) 100vw, 600px"
+                    style={{ objectFit: "cover" }}
                 />
                 <div>
                     <button className="icon-hoverable add-photo" onClick={handleHeaderClick}>

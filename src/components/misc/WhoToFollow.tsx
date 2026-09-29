@@ -11,7 +11,7 @@ export default function WhoToFollow() {
     const [isEnabled, setIsEnabled] = useState(true);
     const [isOpen, setIsOpen] = useState(true);
 
-    const { data, isFetched } = useQuery(["random"], getRandomThreeUsers, { enabled: isEnabled });
+    const { data, isFetched } = useQuery({ queryKey: ["random"], queryFn: getRandomThreeUsers, enabled: isEnabled });
 
     const handleClose = () => {
         setIsOpen(false);

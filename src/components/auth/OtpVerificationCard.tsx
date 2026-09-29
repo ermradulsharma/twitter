@@ -216,9 +216,9 @@ export default function OtpVerificationCard({
                     p: compact ? { xs: 2, sm: 2.5 } : { xs: 2.5, sm: 4 },
                 }}
             >
-                <Stack spacing={compact ? 2 : 3.25} alignItems="stretch">
+                <Stack spacing={compact ? 2 : 3.25} sx={{ alignItems: "stretch" }}>
                     <Stack spacing={compact ? 1.1 : 1.5}>
-                        <Stack direction="row" spacing={1.2} alignItems="center">
+                        <Stack direction="row" spacing={1.2} sx={{ alignItems: "center" }}>
                             {icon && (
                                 <Box
                                     sx={{
@@ -292,7 +292,7 @@ export default function OtpVerificationCard({
                                 temporarily.
                             </Typography>
                             {showDemoOtp && demoOtp && (
-                                <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 0.5, flexWrap: "wrap" }}>
+                                <Stack direction="row" spacing={1} sx={{ alignItems: "center", mt: 0.5, flexWrap: "wrap" }}>
                                     <Box
                                         sx={{
                                             px: 1,
@@ -328,7 +328,7 @@ export default function OtpVerificationCard({
                         <Typography sx={{ mb: compact ? 1 : 1.5, color: "#71767B", fontSize: compact ? 13 : 15 }}>
                             Enter the 6-digit code
                         </Typography>
-                        <Stack direction="row" spacing={{ xs: 0.65, sm: compact ? 0.75 : 1 }} justifyContent="space-between" sx={{ width: "100%" }}>
+                        <Stack direction="row" spacing={{ xs: 0.65, sm: compact ? 0.75 : 1 }} sx={{ justifyContent: "space-between", width: "100%" }}>
                             {Array.from({ length: BOX_LENGTH }).map((_, index) => (
                                 <motion.input
                                     key={index}

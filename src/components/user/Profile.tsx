@@ -110,6 +110,9 @@ export default function Profile({ profile }: { profile: UserProps }) {
                         alt="profile-header"
                         src={profile.headerUrl ? getFullURL(profile.headerUrl) : "/assets/header.jpg"}
                         fill
+                        priority
+                        sizes="(max-width: 768px) 100vw, 600px"
+                        style={{ objectFit: "cover" }}
                     />
                     <div className="avatar-wrapper x-avatar-wrapper">
                         <Avatar

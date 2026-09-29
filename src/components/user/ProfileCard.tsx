@@ -13,7 +13,7 @@ export default function ProfileCard({ username, token }: { username: string; tok
         queryFn: () => getUser(username),
     });
 
-    if (isLoading) return <CircularLoading />;
+    if (isLoading || !data?.user) return <CircularLoading />;
 
     const isFollowingTokenOwner = () => {
         if (data.user.following.length === 0 || !token) return false;

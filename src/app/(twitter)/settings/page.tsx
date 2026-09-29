@@ -387,8 +387,10 @@ export default function SettingsPage() {
             <ListItemText
                 primary={row.title}
                 secondary={row.subtitle}
-                primaryTypographyProps={{ fontWeight: 700, fontSize: "0.98rem" }}
-                secondaryTypographyProps={{ fontSize: "0.85rem" }}
+                slotProps={{
+                    primary: { style: { fontWeight: 700, fontSize: "0.98rem" } },
+                    secondary: { style: { fontSize: "0.85rem" } },
+                }}
             />
             <FaChevronRight style={{ flexShrink: 0, opacity: 0.6, fontSize: "0.85rem" }} />
         </ListItemButton>
@@ -401,9 +403,9 @@ export default function SettingsPage() {
             </Typography>
             <Stack
                 direction="row"
-                alignItems="center"
-                justifyContent="space-between"
                 sx={{
+                    alignItems: "center",
+                    justifyContent: "space-between",
                     border: "1px solid",
                     borderColor: "divider",
                     borderRadius: 3,
@@ -412,7 +414,7 @@ export default function SettingsPage() {
                 }}
             >
                 <Stack>
-                    <Typography fontWeight={700}>{t("settings.darkMode")}</Typography>
+                    <Typography sx={{ fontWeight: 700 }}>{t("settings.darkMode")}</Typography>
                     <Typography variant="body2" color="text.secondary">
                         {theme === "dark" ? t("settings.lightsOut") : t("settings.defaultTheme")}
                     </Typography>
@@ -536,7 +538,7 @@ export default function SettingsPage() {
                         },
                     }[plan.key];
                     return (
-                        <Grid item xs={12} sm={6} key={plan.key}>
+                        <Grid size={{ xs: 12, sm: 6 }} key={plan.key}>
                             <Card
                                 variant="outlined"
                                 sx={{
@@ -570,12 +572,11 @@ export default function SettingsPage() {
                                 }}
                             >
                                 <CardContent sx={{ position: "relative", zIndex: 1 }}>
-                                    <Stack direction="row" justifyContent="space-between" alignItems="center" gap={1}>
+                                    <Stack direction="row" spacing={1} sx={{ justifyContent: "space-between", alignItems: "center" }}>
                                         <Typography
                                             variant="h6"
                                             component="h2"
-                                            fontWeight={800}
-                                            sx={{ color: planStyles.title }}
+                                            sx={{ fontWeight: 800, color: planStyles.title }}
                                         >
                                             {plan.name}
                                         </Typography>
@@ -691,7 +692,7 @@ export default function SettingsPage() {
 
                         {otherSessions.length > 0 && (
                             <Box sx={{ px: 2, pt: 2.5 }}>
-                                <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1.25 }}>
+                                <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 1.25 }}>
                                     <Typography sx={{ fontSize: "0.8125rem", fontWeight: 700, color: "#71767b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
                                         {t("settings.otherSessions")}
                                     </Typography>
@@ -727,7 +728,7 @@ export default function SettingsPage() {
                 return renderLoginHistoryPanel();
             default:
                 return (
-                    <Stack alignItems="center" justifyContent="center" sx={{ height: "100%", px: 3, py: 8 }}>
+                    <Stack sx={{ alignItems: "center", justifyContent: "center", height: "100%", px: 3, py: 8 }}>
                         <Typography color="text.secondary" sx={{ textAlign: "center" }}>
                             {t("settings.selectSettingHint")}
                         </Typography>
@@ -790,12 +791,14 @@ export default function SettingsPage() {
                                 borderRadius: 999,
                             },
                         }}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <MdSearch style={{ opacity: 0.6, fontSize: "1.1rem" }} />
-                                </InputAdornment>
-                            ),
+                        slotProps={{
+                            input: {
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <MdSearch style={{ opacity: 0.6, fontSize: "1.1rem" }} />
+                                    </InputAdornment>
+                                ),
+                            },
                         }}
                     />
 
@@ -836,10 +839,9 @@ export default function SettingsPage() {
                 >
                     <Stack
                         direction="row"
-                        alignItems="center"
-                        gap={1}
+                        spacing={1}
                         className="page-name"
-                        sx={{ display: { xs: "flex", md: activeSection ? "flex" : "none" } }}
+                        sx={{ alignItems: "center", display: { xs: "flex", md: activeSection ? "flex" : "none" } }}
                     >
                         <Button
                             onClick={() => setActiveSection(null)}
@@ -867,26 +869,28 @@ export default function SettingsPage() {
                 onClose={() => setActivatedSubscription(null)}
                 fullWidth
                 maxWidth="xs"
-                PaperProps={{
-                    sx: {
-                        borderRadius: "24px",
-                        overflow: "hidden",
-                        color: "#f7f9f9",
-                        background: "linear-gradient(180deg, rgba(15,20,25,0.98), rgba(9,12,17,0.98))",
-                        border: "1px solid rgba(255,255,255,0.08)",
-                        boxShadow: "0 24px 70px rgba(0,0,0,0.55)",
-                        backdropFilter: "blur(24px)",
+                slotProps={{
+                    paper: {
+                        sx: {
+                            borderRadius: "24px",
+                            overflow: "hidden",
+                            color: "#f7f9f9",
+                            background: "linear-gradient(180deg, rgba(15,20,25,0.98), rgba(9,12,17,0.98))",
+                            border: "1px solid rgba(255,255,255,0.08)",
+                            boxShadow: "0 24px 70px rgba(0,0,0,0.55)",
+                            backdropFilter: "blur(24px)",
+                        },
                     },
-                }}
-                BackdropProps={{
-                    sx: {
-                        backgroundColor: "rgba(3,8,20,0.65)",
-                        backdropFilter: "blur(10px)",
+                    backdrop: {
+                        sx: {
+                            backgroundColor: "rgba(3,8,20,0.65)",
+                            backdropFilter: "blur(10px)",
+                        },
                     },
                 }}
             >
                 <Box sx={{ px: { xs: 2, sm: 3 }, py: { xs: 2.5, sm: 3 } }}>
-                    <Stack spacing={2.25} alignItems="center" textAlign="center">
+                    <Stack spacing={2.25} sx={{ alignItems: "center", textAlign: "center" }}>
                         <Box
                             sx={{
                                 width: 68,
@@ -1015,7 +1019,9 @@ export default function SettingsPage() {
                 autoHideDuration={4200}
                 onClose={() => setPaymentToastOpen(false)}
                 anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-                TransitionProps={{ appear: true }}
+                slotProps={{
+                    transition: { appear: true },
+                }}
             >
                 <Alert
                     onClose={() => setPaymentToastOpen(false)}

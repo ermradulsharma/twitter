@@ -66,16 +66,23 @@ export async function POST(request: NextRequest) {
                 browserNotificationsEnabled: userData.browserNotificationsEnabled ?? false,
             });
 
-            await sendEmail({
-                to: email,
-                subject: "Twitter Clone - Email Verification",
-                html: `
-                    <h2>Twitter Clone</h2>
-                    <p>Your verification OTP is:</p>
-                    <h1>${signupOtp}</h1>
-                    <p>This code expires according to the existing verification flow.</p>
-                `,
-            });
+            try {
+                await sendEmail({
+                    to: email,
+                    subject: "Twitter Clone - Email Verification",
+                    html: `
+                        <h2>Twitter Clone</h2>
+                        <p>Your verification OTP is:</p>
+                        <h1>${signupOtp}</h1>
+                        <p>This code expires in 5 minutes.</p>
+                    `,
+                });
+            } catch (emailErr) {
+                console.warn("[SignUp] Email sending failed, OTP printed to console:", emailErr);
+                console.log(`\n==========================================`);
+                console.log(`[DEV OTP] Verification code for ${email} (${username}): ${signupOtp}`);
+                console.log(`==========================================\n`);
+            }
 
             return NextResponse.json({
                 success: true,

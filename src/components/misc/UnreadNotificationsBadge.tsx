@@ -8,7 +8,7 @@ import { NotificationProps } from "@/types/NotificationProps";
 
 export default function UnreadNotificationsBadge() {
     const { token } = useContext(AuthContext);
-    const { data } = useQuery(["notifications", token?.id], getNotifications, { enabled: !!token });
+    const { data } = useQuery({ queryKey: ["notifications", token?.id], queryFn: getNotifications, enabled: !!token });
 
     const lengthOfUnreadNotifications =
         data?.notifications?.filter((notification: NotificationProps) => !notification.isRead)?.length ?? 0;

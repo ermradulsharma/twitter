@@ -1,13 +1,14 @@
 "use client";
 
-import { useContext } from "react";
+import { use, useContext } from "react";
 
 import { AuthContext } from "@/context/AuthContext";
 import CircularLoading from "@/components/misc/CircularLoading";
 import EditProfile from "@/components/user/EditProfile";
 import BackToArrow from "@/components/misc/BackToArrow";
 
-export default function EditPage({ params: { username } }: { params: { username: string } }) {
+export default function EditPage({ params }: { params: Promise<{ username: string }> }) {
+    const { username } = use(params);
     const { token, isPending, refreshToken } = useContext(AuthContext);
 
     if (isPending) return <CircularLoading />;

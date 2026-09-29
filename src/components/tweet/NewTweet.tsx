@@ -578,27 +578,28 @@ export default function NewTweet({ token, handleSubmit }: NewTweetProps) {
                 open={isTweetLimitDialogOpen}
                 onClose={() => setIsTweetLimitDialogOpen(false)}
                 fullWidth
-                maxWidth="xs"
-                PaperProps={{
-                    sx: {
-                        borderRadius: "24px",
-                        overflow: "hidden",
-                        color: "#f7f9f9",
-                        background: "linear-gradient(180deg, rgba(15,20,25,0.98), rgba(15,20,25,0.92))",
-                        border: "1px solid rgba(255,255,255,0.08)",
-                        boxShadow: "0 24px 70px rgba(0,0,0,0.5)",
-                        backdropFilter: "blur(24px)",
+                slotProps={{
+                    paper: {
+                        sx: {
+                            borderRadius: "24px",
+                            overflow: "hidden",
+                            color: "#f7f9f9",
+                            background: "linear-gradient(180deg, rgba(15,20,25,0.98), rgba(15,20,25,0.92))",
+                            border: "1px solid rgba(255,255,255,0.08)",
+                            boxShadow: "0 24px 70px rgba(0,0,0,0.5)",
+                            backdropFilter: "blur(24px)",
+                        },
                     },
-                }}
-                BackdropProps={{
-                    sx: {
-                        backgroundColor: "rgba(3,8,20,0.65)",
-                        backdropFilter: "blur(10px)",
+                    backdrop: {
+                        sx: {
+                            backgroundColor: "rgba(3,8,20,0.65)",
+                            backdropFilter: "blur(10px)",
+                        },
                     },
                 }}
             >
                 <DialogTitle sx={{ px: 3, pt: 3, pb: 1.5 }}>
-                    <Stack spacing={1.5} alignItems="center" textAlign="center">
+                    <Stack spacing={1.5} sx={{ alignItems: "center", textAlign: "center" }}>
                         <Stack
                             sx={{
                                 width: 72,

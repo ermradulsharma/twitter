@@ -168,21 +168,22 @@ export default function Conversation({ conversation, token, handleConversations 
                 open={isConfirmationOpen}
                 onClose={handleConfirmationClose}
                 fullWidth
-                maxWidth={false}
-                TransitionProps={{ appear: true }}
-                PaperProps={{
-                    sx: {
-                        width: { xs: "calc(100vw - 32px)", sm: 500 },
-                        maxWidth: { xs: 420, sm: 500 },
-                        borderRadius: "20px",
-                        border: theme.palette.mode === "dark" ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(15,20,25,0.08)",
-                        backgroundColor: theme.palette.mode === "dark" ? "#16181C" : "#fff",
-                        boxShadow:
-                            theme.palette.mode === "dark"
-                                ? "0 20px 60px rgba(0,0,0,0.45)"
-                                : "0 18px 50px rgba(15,20,25,0.12)",
-                        px: 0,
-                        overflow: "hidden",
+                slotProps={{
+                    transition: { appear: true },
+                    paper: {
+                        sx: {
+                            width: { xs: "calc(100vw - 32px)", sm: 500 },
+                            maxWidth: { xs: 420, sm: 500 },
+                            borderRadius: "20px",
+                            border: theme.palette.mode === "dark" ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(15,20,25,0.08)",
+                            backgroundColor: theme.palette.mode === "dark" ? "#16181C" : "#fff",
+                            boxShadow:
+                                theme.palette.mode === "dark"
+                                    ? "0 20px 60px rgba(0,0,0,0.45)"
+                                    : "0 18px 50px rgba(15,20,25,0.12)",
+                            px: 0,
+                            overflow: "hidden",
+                        },
                     },
                 }}
             >

@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useEffect, useRef } from "react";
+import { use, useContext, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
@@ -12,10 +12,11 @@ import NotFound from "@/app/not-found";
 import BackToArrow from "@/components/misc/BackToArrow";
 
 export default function SingleTweetPage({
-    params: { username, tweetId },
+    params,
 }: {
-    params: { username: string; tweetId: string };
+    params: Promise<{ username: string; tweetId: string }>;
 }) {
+    const { username, tweetId } = use(params);
     const queryKey = ["tweets", username, tweetId];
 
     const { token, isPending } = useContext(AuthContext);

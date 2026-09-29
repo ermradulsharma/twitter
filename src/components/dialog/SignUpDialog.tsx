@@ -32,7 +32,7 @@ export default function SignUpDialog({ open, handleSignUpClose }: SignUpDialogPr
             .string()
             .min(3, "Username should be of minimum 3 characters length.")
             .max(20, "Username should be of maximum 20 characters length.")
-            .matches(/^[a-zA-Z0-9_]{1,14}[a-zA-Z0-9]$/, "Username is invalid")
+            .matches(/^[a-zA-Z0-9_]{3,20}$/, "Username must contain only letters, numbers, or underscores.")
             .required("Username is required.")
             .test("checkUserExists", "User already exists.", async (value) => {
                 if (value) {
@@ -141,8 +141,10 @@ export default function SignUpDialog({ open, handleSignUpClose }: SignUpDialogPr
                                     name="username"
                                     label={t("auth.username")}
                                     placeholder="username"
-                                    InputProps={{
-                                        startAdornment: <InputAdornment position="start">@</InputAdornment>,
+                                    slotProps={{
+                                        input: {
+                                            startAdornment: <InputAdornment position="start">@</InputAdornment>,
+                                        },
                                     }}
                                     value={formik.values.username}
                                     onChange={formik.handleChange}

@@ -101,8 +101,10 @@ export default function LogInDialog({ open, handleLogInClose }: LogInDialogProps
                                 name="identifier"
                                 label="Email or Username"
                                 placeholder="email or username"
-                                InputProps={{
-                                    startAdornment: <InputAdornment position="start">@</InputAdornment>,
+                                slotProps={{
+                                    input: {
+                                        startAdornment: <InputAdornment position="start">@</InputAdornment>,
+                                    },
                                 }}
                                 value={formik.values.identifier}
                                 onChange={formik.handleChange}

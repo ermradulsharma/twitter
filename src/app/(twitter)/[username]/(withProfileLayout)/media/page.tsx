@@ -8,7 +8,10 @@ import CircularLoading from "@/components/misc/CircularLoading";
 import NotFound from "@/app/not-found";
 import NothingToShow from "@/components/misc/NothingToShow";
 
-export default function MediaPage({ params: { username } }: { params: { username: string } }) {
+import { use } from "react";
+
+export default function MediaPage({ params }: { params: Promise<{ username: string }> }) {
+    const { username } = use(params);
     const { isLoading, data } = useQuery({
         queryKey: ["tweets", username, "media"],
         queryFn: () => getUserMedia(username),

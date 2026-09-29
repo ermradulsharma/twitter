@@ -23,7 +23,7 @@ export default function NewTweetDialog({ open, handleNewTweetClose, token }: New
             onClose={handleNewTweetClose}
             maxWidth="sm"
             fullWidth
-            PaperProps={{ className: "new-tweet-dialog-paper" }}
+            slotProps={{ paper: { className: "new-tweet-dialog-paper" } }}
         >
             <div className="new-tweet-wrapper">
                 <div className="composer-modal-header">

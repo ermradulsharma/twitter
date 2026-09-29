@@ -23,15 +23,21 @@ export default function Notification({ notification, token }: { notification: No
         setAnchorEl(null);
     };
 
-    const content = JSON.parse(notification.content);
+    let content: any = null;
+    try {
+        content = notification.content ? JSON.parse(notification.content) : null;
+    } catch {
+        content = null;
+    }
+
     const createdAt = new Date(notification.createdAt);
     const formattedTime = new Intl.DateTimeFormat(undefined, {
         dateStyle: "medium",
         timeStyle: "short",
     }).format(createdAt);
 
-    const tweetUrl = `/${notification.user.username}/tweets/${content?.content?.id}`;
-    const profileUrl = `/${content?.sender.username}`;
+    const tweetUrl = `/${notification.user?.username || ""}/tweets/${content?.content?.id || ""}`;
+    const profileUrl = content?.sender?.username ? `/${content.sender.username}` : "#";
 
     const iconColors: Record<string, { bg: string; fg: string }> = {
         message: { bg: "rgba(29,155,240,0.14)", fg: "#1d9bf0" },
@@ -44,9 +50,9 @@ export default function Notification({ notification, token }: { notification: No
 
     const currentIconColor = iconColors[notification.type] ?? iconColors.welcome;
 
-    const senderName = content?.sender.name !== "" ? content?.sender.name : content?.sender.username;
+    const senderName = content?.sender ? (content.sender.name || content.sender.username) : "TwitterX Team";
 
-    const popoverJSX = (
+    const popoverJSX = content?.sender?.username ? (
         <Popover
             sx={{
                 pointerEvents: "none",
@@ -64,11 +70,11 @@ export default function Notification({ notification, token }: { notification: No
             onClose={handlePopoverClose}
             disableRestoreFocus
         >
-            <ProfileCard username={content?.sender.username} token={token} />
+            <ProfileCard username={content.sender.username} token={token} />
         </Popover>
-    );
+    ) : null;
 
-    const sharedJSX = (
+    const sharedJSX = content?.sender?.username ? (
         <div className="notification-sender" style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
             <Link
                 href={profileUrl}
@@ -80,17 +86,17 @@ export default function Notification({ notification, token }: { notification: No
                 <Avatar
                     sx={{ width: 38, height: 38, flexShrink: 0, border: "1.5px solid rgba(255,255,255,0.08)" }}
                     alt=""
-                    src={content?.sender.photoUrl ? getFullURL(content?.sender.photoUrl) : "/assets/egg.jpg"}
+                    src={content?.sender?.photoUrl ? getFullURL(content.sender.photoUrl) : "/assets/egg.jpg"}
                 />
                 <div className="profile-info-main" style={{ minWidth: 0 }}>
                     <h1 style={{ margin: 0, fontSize: 14.5, lineHeight: 1.18, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                        {senderName} <span className="text-muted">(@{content?.sender.username})</span>
+                        {senderName} <span className="text-muted">(@{content.sender.username})</span>
                     </h1>
                 </div>
             </Link>
             {popoverJSX}
         </div>
-    );
+    ) : null;
 
     const cardStyle: CSSProperties = {
         display: "grid",
