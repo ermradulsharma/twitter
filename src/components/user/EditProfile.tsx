@@ -102,7 +102,7 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                 open: true,
             });
             refreshToken();
-            queryClient.invalidateQueries(["users", profile.username]);
+            queryClient.invalidateQueries({ queryKey: ["users", profile.username] });
         },
     });
 
@@ -132,7 +132,7 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
         setIsBlueLoading(false);
         setIsBlueOpen(false);
         refreshToken();
-        queryClient.invalidateQueries(["users", profile.username]);
+        queryClient.invalidateQueries({ queryKey: ["users", profile.username] });
     };
 
     return (
@@ -149,8 +149,8 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                         headerPreview
                             ? headerPreview
                             : profile.headerUrl
-                            ? getFullURL(profile.headerUrl)
-                            : "/assets/header.jpg"
+                                ? getFullURL(profile.headerUrl)
+                                : "/assets/header.jpg"
                     }
                     fill
                 />
@@ -302,7 +302,7 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                     ) : (
                         <button
                             className={`btn btn-dark save ${formik.isValid ? "" : "disabled"}`}
-                            
+
                             disabled={!formik.isValid}
                             type="submit"
                         >
@@ -340,7 +340,7 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                                 <p>{t("profile.blueDescription")}</p>
                                 <p>
                                     {t("profile.blueCodeInfo")}
-                                    <a href="https://github.com/DishantBhere/TwitterX" target="_blank">
+                                    <a href="https://github.com/ermradulsharma/twitter" target="_blank">
                                         {" "}
                                         {t("profile.here")}{" "}
                                     </a>

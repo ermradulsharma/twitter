@@ -4,7 +4,7 @@ import crypto from "crypto";
 
 import { prisma } from "@/prisma/client";
 import { verifyJwtToken } from "@/utilities/auth";
-import { createUserToken } from "@/utilities/auth/jwt";
+import { createUserToken, SECURE_COOKIE_OPTIONS } from "@/utilities/auth/jwt";
 import { sendEmail } from "@/utilities/email/sendEmail";
 import { generateInvoice } from "@/utilities/invoice/generateInvoice";
 import { VerifiedToken } from "@/types/TokenProps";
@@ -13,24 +13,11 @@ const ACTIVE_PLANS = ["BRONZE", "SILVER", "GOLD"] as const;
 
 type ActivePlan = (typeof ACTIVE_PLANS)[number];
 
-const getCurrentIstMinutes = () => {
-    const parts = new Intl.DateTimeFormat("en-US", {
-        timeZone: "Asia/Kolkata",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-    }).formatToParts(new Date());
-
-    const hour = Number(parts.find((part) => part.type === "hour")?.value ?? "0");
-    const minute = Number(parts.find((part) => part.type === "minute")?.value ?? "0");
-    return hour * 60 + minute;
-};
-
 export async function POST(request: NextRequest) {
     const { plan, razorpayPaymentId, razorpayOrderId, razorpaySignature } = await request.json();
 
     if (!plan || !ACTIVE_PLANS.includes(plan)) {
-        return NextResponse.json({ success: false, message: "Invalid subscription plan." });
+        return NextResponse.json({ success: false, message: "Invalid subscription plan." }, { status: 400 });
     }
 
     const cookieStore = await cookies();
@@ -38,16 +25,19 @@ export async function POST(request: NextRequest) {
     const verifiedToken = token ? ((await verifyJwtToken(token, request.nextUrl.origin)) as unknown as VerifiedToken) : null;
 
     if (!verifiedToken) {
-        return NextResponse.json({ success: false, message: "You are not authorized to perform this action." });
+        return NextResponse.json({ success: false, message: "You are not authorized to perform this action." }, { status: 401 });
     }
 
     // Razorpay HMAC SHA256 Signature Verification (Mandatory for paid subscriptions)
     const razorpaySecret = process.env.RAZORPAY_KEY_SECRET;
     if (!razorpaySecret || !razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
-        return NextResponse.json({
-            success: false,
-            message: "Missing payment verification parameters or secret key.",
-        });
+        return NextResponse.json(
+            {
+                success: false,
+                message: "Missing payment verification parameters or secret key.",
+            },
+            { status: 400 }
+        );
     }
 
     const generatedSignature = crypto
@@ -56,31 +46,62 @@ export async function POST(request: NextRequest) {
         .digest("hex");
 
     if (generatedSignature !== razorpaySignature) {
-        return NextResponse.json({
-            success: false,
-            message: "Invalid payment signature verification failed.",
-        });
+        return NextResponse.json(
+            {
+                success: false,
+                message: "Invalid payment signature verification failed.",
+            },
+            { status: 400 }
+        );
     }
 
     try {
-        const updatedUser = await prisma.user.update({
-            where: { id: verifiedToken.id },
-            data: {
-                subscriptionPlan: plan as ActivePlan,
-                subscriptionExpiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-                monthlyTweetCount: 0,
-            },
+        // Prevent payment replay attack
+        const existingPayment = await (prisma as any).payment.findUnique({
+            where: { razorpayPaymentId: String(razorpayPaymentId) },
         });
+
+        if (existingPayment) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "This payment transaction has already been processed.",
+                },
+                { status: 400 }
+            );
+        }
 
         const activePlan = plan as ActivePlan;
         const paymentId = String(razorpayPaymentId || "");
         const orderId = String(razorpayOrderId || "");
-        const purchaseDate = new Date();
         const amountByPlan: Record<ActivePlan, number> = {
             BRONZE: 100,
             SILVER: 300,
             GOLD: 1000,
         };
+
+        const updatedUser = await prisma.$transaction(async (tx: any) => {
+            await tx.payment.create({
+                data: {
+                    razorpayPaymentId: paymentId,
+                    razorpayOrderId: orderId,
+                    userId: verifiedToken.id,
+                    plan: activePlan,
+                    amount: amountByPlan[activePlan],
+                },
+            });
+
+            return await tx.user.update({
+                where: { id: verifiedToken.id },
+                data: {
+                    subscriptionPlan: activePlan,
+                    subscriptionExpiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                    monthlyTweetCount: 0,
+                },
+            });
+        });
+
+        const purchaseDate = new Date();
         const invoiceBuffer = generateInvoice({
             userName: updatedUser.name,
             email: updatedUser.email ?? verifiedToken.email ?? "",
@@ -128,19 +149,20 @@ export async function POST(request: NextRequest) {
             success: true,
         });
         response.cookies.set({
-            name: "token",
+            ...SECURE_COOKIE_OPTIONS,
             value: newToken,
-            path: "/",
         });
 
         return response;
-
     } catch (error) {
         console.error("SUBSCRIPTION ACTIVATE ERROR:", error);
 
-        return NextResponse.json({
-            success: false,
-            message: error instanceof Error ? error.message : "Unknown error",
-        });
+        return NextResponse.json(
+            {
+                success: false,
+                message: error instanceof Error ? error.message : "Unknown error",
+            },
+            { status: 500 }
+        );
     }
 }

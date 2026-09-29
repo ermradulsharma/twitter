@@ -2,15 +2,20 @@ import { NextResponse, NextRequest } from "next/server";
 
 import { prisma } from "@/prisma/client";
 import { comparePasswords } from "@/utilities/bcrypt";
-import { createUserToken } from "@/utilities/auth/jwt";
-import { saveLoginOtp } from "@/utilities/auth/login-otp";
-import { sendEmail } from "@/utilities/email/sendEmail";
+import { createUserToken, SECURE_COOKIE_OPTIONS } from "@/utilities/auth/jwt";
 import { getLoginContext } from "@/utilities/auth/shared";
 
 export async function POST(request: NextRequest) {
     const body = await request.json();
     const identifier = body.identifier ?? body.username;
     const password = body.password;
+
+    if (!identifier || !password) {
+        return NextResponse.json({
+            success: false,
+            message: "Username/email and password are required.",
+        }, { status: 400 });
+    }
 
     try {
         const user = await prisma.user.findFirst({
@@ -20,19 +25,25 @@ export async function POST(request: NextRequest) {
         });
 
         if (!user) {
-            return NextResponse.json({
-                success: false,
-                message: "Username or password is not correct.",
-            });
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Username or password is not correct.",
+                },
+                { status: 401 }
+            );
         }
 
         const isPasswordValid = await comparePasswords(password, user.password);
 
         if (!isPasswordValid) {
-            return NextResponse.json({
-                success: false,
-                message: "Username or password is not correct.",
-            });
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Username or password is not correct.",
+                },
+                { status: 401 }
+            );
         }
 
         const { browser, operatingSystem, deviceType, ipAddress } = getLoginContext(
@@ -60,23 +71,22 @@ export async function POST(request: NextRequest) {
         });
 
         response.cookies.set({
-            name: "token",
+            ...SECURE_COOKIE_OPTIONS,
             value: token,
-            path: "/",
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-            maxAge: 60 * 60 * 24,
         });
 
         return response;
 
     } catch (error) {
-    console.error("LOGIN ERROR:", error);
+        console.error("LOGIN ERROR:", error);
 
-    return NextResponse.json({
-        success: false,
-        message: "Login failed.",
-    });
+        return NextResponse.json(
+            {
+                success: false,
+                message: "Login failed.",
+            },
+            { status: 500 }
+        );
+    }
 }
-}
+

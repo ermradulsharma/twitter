@@ -17,12 +17,15 @@ const isSameCalendarDay = (first: Date, second: Date) =>
     first.getMonth() === second.getMonth() &&
     first.getDate() === second.getDate();
 
-const makePassword = (length = 12) => {
-    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+import crypto from "crypto";
+
+const makePassword = (length = 14) => {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=";
+    const randomBytes = crypto.randomBytes(length);
     let password = "";
 
     for (let index = 0; index < length; index += 1) {
-        password += letters.charAt(Math.floor(Math.random() * letters.length));
+        password += chars.charAt(randomBytes[index] % chars.length);
     }
 
     return password;
@@ -38,7 +41,7 @@ export async function POST(request: NextRequest) {
     const resend = Boolean(body.resend);
 
     if (!identifier) {
-        return NextResponse.json({ success: false, message: "Email or phone is required." });
+        return NextResponse.json({ success: false, message: "Email or phone is required." }, { status: 400 });
     }
 
     try {
@@ -48,11 +51,16 @@ export async function POST(request: NextRequest) {
             },
         });
 
-        if (!user) {
-            return NextResponse.json({ success: false, message: "User not found." });
-        }
-
         if (action === "request") {
+            // Neutral response if user doesn't exist to prevent User Enumeration Attack
+            if (!user) {
+                return NextResponse.json({
+                    success: true,
+                    requiresOtp: true,
+                    message: "If an account exists with this credential, a verification code has been sent.",
+                });
+            }
+
             const isDevelopment = process.env.NODE_ENV === "development";
             const deliveryMethod = identifier.includes("@") ? "email" : "phone";
             const demoOtp = isDevelopment && deliveryMethod === "phone" ? "123456" : undefined;

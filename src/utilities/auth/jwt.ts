@@ -49,3 +49,13 @@ export const createUserToken = async (user: JwtUser) => {
         .setExpirationTime("1d")
         .sign(getJwtSecretKey());
 };
+
+export const SECURE_COOKIE_OPTIONS = {
+    name: "token",
+    path: "/",
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+    maxAge: 60 * 60 * 24, // 1 day
+};
+

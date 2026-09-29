@@ -117,22 +117,6 @@ export default function RootPage() {
     };
 
     const handleGoogleLogin = async () => {
-        const { deviceType } = getLoginContext(window.navigator.userAgent || "", "", "", null);
-        if (deviceType === "Mobile") {
-            const currentIstMinutes = getCurrentIstMinutes();
-            const startMinutes = 10 * 60;
-            const endMinutes = 13 * 60;
-
-            if (currentIstMinutes < startMinutes || currentIstMinutes > endMinutes) {
-                setSnackbar({
-                    message: t("settings.mobileLoginRestricted"),
-                    severity: "error",
-                    open: true,
-                });
-                return;
-            }
-        }
-
         const redirectTo = `${window.location.origin}/auth/google/callback`;
         const { error } = await supabase.auth.signInWithOAuth({
             provider: "google",

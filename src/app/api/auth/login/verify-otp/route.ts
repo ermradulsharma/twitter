@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { prisma } from "@/prisma/client";
-import { createUserToken } from "@/utilities/auth/jwt";
+import { createUserToken, SECURE_COOKIE_OPTIONS } from "@/utilities/auth/jwt";
 import { verifyLoginOtp } from "@/utilities/auth/login-otp";
 import { getClientIpAddress } from "@/utilities/auth/shared";
 
@@ -9,10 +9,10 @@ export async function POST(request: NextRequest) {
     const { username, otp } = await request.json();
 
     if (!username) {
-        return NextResponse.json({ success: false, message: "Username is required." });
+        return NextResponse.json({ success: false, message: "Username is required." }, { status: 400 });
     }
     if (!otp || !/^\d{6}$/.test(otp)) {
-        return NextResponse.json({ success: false, message: "Enter the 6-digit OTP." });
+        return NextResponse.json({ success: false, message: "Enter the 6-digit OTP." }, { status: 400 });
     }
 
     try {
@@ -21,19 +21,19 @@ export async function POST(request: NextRequest) {
         });
 
         if (!user) {
-            return NextResponse.json({ success: false, message: "User not found." });
+            return NextResponse.json({ success: false, message: "User not found." }, { status: 404 });
         }
 
         const verification = verifyLoginOtp(user.id, otp);
         if (!verification.success || !verification.pending) {
-            return NextResponse.json(verification);
+            return NextResponse.json(verification, { status: 400 });
         }
 
         const pendingLogin = verification.pending;
         const ipAddress = getClientIpAddress(
             request.headers.get("x-forwarded-for") || "",
             request.headers.get("x-real-ip") || "",
-            request.ip
+            (request as any).ip
         );
 
         await prisma.loginHistory.create({
@@ -50,13 +50,13 @@ export async function POST(request: NextRequest) {
         const token = await createUserToken(user);
         const response = NextResponse.json({ success: true });
         response.cookies.set({
-            name: "token",
+            ...SECURE_COOKIE_OPTIONS,
             value: token,
-            path: "/",
         });
 
         return response;
     } catch (error: unknown) {
-        return NextResponse.json({ success: false, error });
+        return NextResponse.json({ success: false, message: "OTP verification failed." }, { status: 500 });
     }
 }
+

@@ -105,8 +105,8 @@ TwitterX reimagines the classic X (Twitter) experience with a modern web stack. 
 
 ```bash
 # Clone the repository
-git clone https://github.com/DishantBhere/TwitterX.git
-cd TwitterX
+git clone https://github.com/ermradulsharma/twitter.git
+cd twitter
 
 # Install dependencies
 npm install
@@ -185,7 +185,7 @@ The app will be available at `http://localhost:3000`.
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome. Feel free to check the [issues page](https://github.com/DishantBhere/TwitterX/issues).
+Contributions, issues, and feature requests are welcome. Feel free to check the [issues page](https://github.com/ermradulsharma/twitter/issues).
 
 ---
 

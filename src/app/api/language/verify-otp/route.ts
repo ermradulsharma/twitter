@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { prisma } from "@/prisma/client";
 import { verifyJwtToken } from "@/utilities/auth";
-import { createUserToken } from "@/utilities/auth/jwt";
+import { createUserToken, SECURE_COOKIE_OPTIONS } from "@/utilities/auth/jwt";
 import { isSupportedLanguage } from "@/utilities/language";
 import { verifyLanguageOtp } from "@/utilities/language/otp";
 import { UserProps } from "@/types/UserProps";
@@ -12,10 +12,10 @@ export async function POST(request: NextRequest) {
     const { language, otp } = await request.json();
 
     if (!language || !isSupportedLanguage(language)) {
-        return NextResponse.json({ success: false, message: "Unsupported language." });
+        return NextResponse.json({ success: false, message: "Unsupported language." }, { status: 400 });
     }
     if (!otp || !/^\d{6}$/.test(otp)) {
-        return NextResponse.json({ success: false, message: "Enter the 6-digit OTP." });
+        return NextResponse.json({ success: false, message: "Enter the 6-digit OTP." }, { status: 400 });
     }
 
     const cookieStore = await cookies();
@@ -23,11 +23,11 @@ export async function POST(request: NextRequest) {
     const verifiedToken = token ? ((await verifyJwtToken(token, request.nextUrl.origin)) as unknown as UserProps) : null;
 
     if (!verifiedToken) {
-        return NextResponse.json({ success: false, message: "You must be logged in to change language." });
+        return NextResponse.json({ success: false, message: "You must be logged in to change language." }, { status: 401 });
     }
 
     const verification = verifyLanguageOtp(verifiedToken.id, otp, language);
-    if (!verification.success) return NextResponse.json(verification);
+    if (!verification.success) return NextResponse.json(verification, { status: 400 });
 
     const user = await prisma.user.update({
         where: { id: verifiedToken.id },
@@ -37,9 +37,8 @@ export async function POST(request: NextRequest) {
     const newToken = await createUserToken(user);
     const response = NextResponse.json({ success: true, preferredLanguage: user.preferredLanguage });
     response.cookies.set({
-        name: "token",
+        ...SECURE_COOKIE_OPTIONS,
         value: newToken,
-        path: "/",
     });
 
     return response;

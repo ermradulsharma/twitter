@@ -46,7 +46,7 @@ export default function Retweet({ tweetId, tweetAuthor }: TweetOptionsProps) {
             });
         }
 
-        if (mutation.isLoading) return;
+        if (mutation.isPending) return;
 
         const tokenOwnerId = JSON.stringify(token?.id);
         const retweetedBy = data?.tweet?.retweetedBy;

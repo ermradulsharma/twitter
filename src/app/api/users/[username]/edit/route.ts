@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 
 import { prisma } from "@/prisma/client";
 import { verifyJwtToken } from "@/utilities/auth";
-import { createUserToken } from "@/utilities/auth/jwt";
+import { createUserToken, SECURE_COOKIE_OPTIONS } from "@/utilities/auth/jwt";
 import { UserProps } from "@/types/UserProps";
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ username: string }> }) {
@@ -14,11 +14,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const token = cookieStore.get("token")?.value;
     const verifiedToken = token ? ((await verifyJwtToken(token, request.nextUrl.origin)) as unknown as UserProps) : null;
 
-    if (!verifiedToken)
-        return NextResponse.json({ success: false, message: "You are not authorized to perform this action." });
-
-    if (verifiedToken.username !== username)
-        return NextResponse.json({ success: false, message: "You are not authorized to perform this action." });
+    if (!verifiedToken || verifiedToken.username !== username) {
+        return NextResponse.json({ success: false, message: "You are not authorized to perform this action." }, { status: 401 });
+    }
 
     // Whitelist only editable profile fields to prevent Mass Assignment attack
     const { name, description, location, website, photoUrl, headerUrl } = body;
@@ -44,14 +42,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             success: true,
         });
         response.cookies.set({
-            name: "token",
+            ...SECURE_COOKIE_OPTIONS,
             value: newToken,
-            path: "/",
         });
 
         return response;
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Failed to edit user.";
-        return NextResponse.json({ success: false, message });
+        return NextResponse.json({ success: false, message }, { status: 500 });
     }
 }

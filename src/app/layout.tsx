@@ -5,7 +5,7 @@ import "../styles/globals.scss";
 import Providers from "./providers";
 
 export const metadata = {
-    title: "Twitter | Dishant",
+    title: "Twitter",
 };
 
 const roboto = localFont({

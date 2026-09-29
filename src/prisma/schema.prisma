@@ -145,3 +145,16 @@ model VerificationToken {
     @@index([expiresAt])
 }
 
+model Payment {
+    id                String           @id @default(uuid())
+    razorpayPaymentId String           @unique
+    razorpayOrderId   String
+    userId            String
+    plan              SubscriptionPlan
+    amount            Int
+    createdAt         DateTime         @default(now())
+
+    @@index([userId])
+}
+
+

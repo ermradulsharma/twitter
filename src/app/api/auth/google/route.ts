@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
 import { prisma } from "@/prisma/client";
-import { createUserToken } from "@/utilities/auth/jwt";
+import { createUserToken, SECURE_COOKIE_OPTIONS } from "@/utilities/auth/jwt";
 import { getCurrentIstMinutes, getLoginContext } from "@/utilities/auth/shared";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -120,13 +120,8 @@ export async function POST(request: NextRequest) {
             redirectTo: "/home",
         });
         response.cookies.set({
-            name: "token",
+            ...SECURE_COOKIE_OPTIONS,
             value: token,
-            path: "/",
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-            maxAge: 60 * 60 * 24,
         });
 
         return response;

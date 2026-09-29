@@ -93,7 +93,7 @@ export default function Follow({ profile }: { profile: UserProps }) {
         const followers = profile.followers;
         const isFollowedByTokenOwner = followers?.some((user: { id: string }) => JSON.stringify(user.id) === tokenOwnerId);
 
-        if (!followMutation.isLoading && !followMutation.isLoading) {
+        if (!followMutation.isPending && !unfollowMutation.isPending) {
             if (isFollowedByTokenOwner) {
                 unfollowMutation.mutate(tokenOwnerId);
             } else {

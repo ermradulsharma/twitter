@@ -27,7 +27,7 @@ export default function NotificationsPage() {
     const mutation = useMutation({
         mutationFn: markNotificationsRead,
         onSuccess: () => {
-            queryClient.invalidateQueries(["notifications"]);
+            queryClient.invalidateQueries({ queryKey: ["notifications"] });
         },
         onError: (error) => console.log(error),
     });

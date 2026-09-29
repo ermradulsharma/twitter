@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { prisma } from "@/prisma/client";
 import { hashPassword } from "@/utilities/bcrypt";
-import { createUserToken } from "@/utilities/auth/jwt";
+import { createUserToken, SECURE_COOKIE_OPTIONS } from "@/utilities/auth/jwt";
 import { sendEmail } from "@/utilities/email/sendEmail";
 import { saveSignupOtp, verifySignupOtp } from "@/utilities/auth/signup-otp";
 
@@ -114,14 +114,13 @@ export async function POST(request: NextRequest) {
             success: true,
         });
         response.cookies.set({
-            name: "token",
+            ...SECURE_COOKIE_OPTIONS,
             value: token,
-            path: "/",
         });
 
         return response;
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Something went wrong.";
-        return NextResponse.json({ success: false, message });
+        return NextResponse.json({ success: false, message }, { status: 500 });
     }
 }

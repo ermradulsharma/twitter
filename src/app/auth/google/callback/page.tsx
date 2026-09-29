@@ -59,7 +59,7 @@ export default function GoogleAuthCallbackPage() {
 
             const payload = await response.json();
             if (!payload?.success) {
-                const nextMessage = mapMobileLoginRestrictionMessage(payload?.message ?? "Google login failed.");
+                const nextMessage = payload?.message ?? "Google login failed.";
                 setMessage(nextMessage);
                 setSnackbar({ message: nextMessage, severity: "error", open: true });
                 return;
