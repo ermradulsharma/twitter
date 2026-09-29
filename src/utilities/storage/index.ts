@@ -7,19 +7,22 @@ const globalForSupabase = globalThis as typeof globalThis & {
     supabaseClient?: ReturnType<typeof createClient>;
 };
 
-export const supabase =
-    globalForSupabase.supabaseClient ??
-    createClient(URL, KEY, {
-        auth: {
-            flowType: "pkce",
-            detectSessionInUrl: false,
-            persistSession: false,
-        },
-    });
-
-if (process.env.NODE_ENV !== "production") {
-    globalForSupabase.supabaseClient = supabase;
+function getSupabaseClient() {
+    if (!globalForSupabase.supabaseClient) {
+        globalForSupabase.supabaseClient = createClient(URL, KEY, {
+            auth: {
+                flowType: "pkce",
+                autoRefreshToken: false,
+                persistSession: false,
+                detectSessionInUrl: false,
+                storageKey: "twitterx_storage_media_auth",
+            },
+        });
+    }
+    return globalForSupabase.supabaseClient;
 }
+
+export const supabase = getSupabaseClient();
 
 export const uploadFile = async (file: File) => {
     const extension = file.name && file.name.includes(".") ? file.name.split(".").pop() : "bin";
