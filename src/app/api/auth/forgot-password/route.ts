@@ -31,7 +31,21 @@ const makePassword = (length = 14) => {
     return password;
 };
 
+import { checkRateLimit } from "@/utilities/security/rateLimit";
+
 export async function POST(request: NextRequest) {
+    const forwardedFor = request.headers.get("x-forwarded-for") || "";
+    const realIp = request.headers.get("x-real-ip") || "";
+    const ip = forwardedFor.split(",")[0]?.trim() || realIp || "localhost";
+
+    const rateLimit = checkRateLimit(`forgot_${ip}`, 5, 60 * 1000);
+    if (!rateLimit.success) {
+        return NextResponse.json(
+            { success: false, message: "Too many password reset requests. Please try again after 1 minute." },
+            { status: 429 }
+        );
+    }
+
     const body = await request.json();
     const action = normalizeIdentifier(body.action);
     const identifier = normalizeIdentifier(body.identifier);

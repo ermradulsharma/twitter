@@ -10,8 +10,8 @@ export async function GET(request: NextRequest) {
         page = "1";
     }
 
-    const parsedPage = Number(page);
-    const parsedLimit = Number(limit);
+    const parsedPage = Math.max(1, Number(page) || 1);
+    const parsedLimit = Math.min(50, Math.max(1, Number(limit) || 10));
     let nextPage = parsedPage + 1;
 
     try {
@@ -141,11 +141,12 @@ export async function GET(request: NextRequest) {
             take: parsedLimit,
         });
 
-        const totalTweets = await prisma.tweet.count();
+        const totalTweets = await prisma.tweet.count({ where: { isReply: false } });
         const lastPage = Math.ceil(totalTweets / parsedLimit);
 
         return NextResponse.json({ success: true, tweets, nextPage, lastPage });
     } catch (error: unknown) {
-        return NextResponse.json({ success: false, error });
+        const message = error instanceof Error ? error.message : "Failed to fetch tweets.";
+        return NextResponse.json({ success: false, message }, { status: 500 });
     }
 }

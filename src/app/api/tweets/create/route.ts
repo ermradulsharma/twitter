@@ -30,9 +30,21 @@ export async function POST(request: NextRequest) {
     }
 
     const authorId = verifiedToken.id;
+    const sanitizedText = typeof text === "string" ? text.slice(0, 280) : "";
 
-    if (!text?.trim() && !photoUrl && !audioUrl) {
-        return NextResponse.json({ success: false, message: "Tweet text can't be empty" }, { status: 400 });
+    if (!sanitizedText.trim() && !photoUrl && !audioUrl) {
+        return NextResponse.json({ success: false, message: "Tweet text or media is required." }, { status: 400 });
+    }
+
+    // Validate media URL formats if provided
+    const isValidUrl = (url: unknown) =>
+        typeof url === "string" && (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/"));
+
+    if (photoUrl && !isValidUrl(photoUrl)) {
+        return NextResponse.json({ success: false, message: "Invalid photo URL format." }, { status: 400 });
+    }
+    if (audioUrl && !isValidUrl(audioUrl)) {
+        return NextResponse.json({ success: false, message: "Invalid audio URL format." }, { status: 400 });
     }
 
     try {
@@ -71,7 +83,7 @@ export async function POST(request: NextRequest) {
         await prisma.$transaction(async (tx: any) => {
             await tx.tweet.create({
                 data: {
-                    text,
+                    text: sanitizedText,
                     photoUrl,
                     audioUrl,
                     author: {

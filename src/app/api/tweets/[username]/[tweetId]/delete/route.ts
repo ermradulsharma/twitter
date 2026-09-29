@@ -16,7 +16,7 @@ export async function DELETE(
     const verifiedToken = token ? ((await verifyJwtToken(token, request.nextUrl.origin)) as unknown as UserProps) : null;
 
     if (!verifiedToken)
-        return NextResponse.json({ success: false, message: "You are not authorized to perform this action." });
+        return NextResponse.json({ success: false, message: "You are not authorized to perform this action." }, { status: 401 });
 
     try {
         const tweet = await prisma.tweet.findUnique({
@@ -29,11 +29,11 @@ export async function DELETE(
         });
 
         if (!tweet) {
-            return NextResponse.json({ success: false, message: "Tweet not found." });
+            return NextResponse.json({ success: false, message: "Tweet not found." }, { status: 404 });
         }
 
         if (tweet.authorId !== verifiedToken.id) {
-            return NextResponse.json({ success: false, message: "You are not authorized to perform this action." });
+            return NextResponse.json({ success: false, message: "You are not authorized to perform this action." }, { status: 403 });
         }
 
         await prisma.tweet.delete({
@@ -49,6 +49,7 @@ export async function DELETE(
 
         return NextResponse.json({ success: true });
     } catch (error: unknown) {
-        return NextResponse.json({ success: false, error });
+        const message = error instanceof Error ? error.message : "Failed to delete tweet.";
+        return NextResponse.json({ success: false, message }, { status: 500 });
     }
 }
