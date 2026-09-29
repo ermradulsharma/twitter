@@ -6,7 +6,7 @@ import { verifyJwtToken } from "@/utilities/auth";
 import { UserProps } from "@/types/UserProps";
 
 export async function POST(request: NextRequest) {
-    const { tokenOwnerId, participants }: { tokenOwnerId?: string; participants: string[] } = await request.json();
+    const { participants }: { participants: string[] } = await request.json();
 
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
@@ -16,8 +16,14 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: false, message: "You are not authorized to perform this action." }, { status: 401 });
     }
 
-    if (!participants || !participants.includes(verifiedToken.username)) {
-        return NextResponse.json({ success: false, message: "You are not authorized to perform this action." }, { status: 403 });
+    if (!Array.isArray(participants) || participants.length !== 2 || !participants[0] || !participants[1]) {
+        return NextResponse.json({ success: false, message: "Invalid participants specified." }, { status: 400 });
+    }
+
+    const [userA, userB] = participants;
+
+    if (verifiedToken.username !== userA && verifiedToken.username !== userB) {
+        return NextResponse.json({ success: false, message: "You are not authorized to delete this conversation." }, { status: 403 });
     }
 
     try {
@@ -25,12 +31,12 @@ export async function POST(request: NextRequest) {
             where: {
                 OR: [
                     {
-                        sender: { username: participants[0] },
-                        recipient: { username: participants[1] },
+                        sender: { username: userA },
+                        recipient: { username: userB },
                     },
                     {
-                        sender: { username: participants[1] },
-                        recipient: { username: participants[0] },
+                        sender: { username: userB },
+                        recipient: { username: userA },
                     },
                 ],
             },
@@ -41,4 +47,5 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: false, message }, { status: 500 });
     }
 }
+
 

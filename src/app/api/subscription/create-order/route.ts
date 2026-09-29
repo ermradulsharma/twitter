@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     const { plan } = await request.json();
 
     if (!plan || !(plan in PLAN_AMOUNTS)) {
-        return NextResponse.json({ success: false, message: "Invalid subscription plan." });
+        return NextResponse.json({ success: false, message: "Invalid subscription plan." }, { status: 400 });
     }
 
     const cookieStore = await cookies();
@@ -30,14 +30,14 @@ export async function POST(request: NextRequest) {
     const verifiedToken = token ? ((await verifyJwtToken(token, request.nextUrl.origin)) as unknown as VerifiedToken) : null;
 
     if (!verifiedToken) {
-        return NextResponse.json({ success: false, message: "You are not authorized to perform this action." });
+        return NextResponse.json({ success: false, message: "You are not authorized to perform this action." }, { status: 401 });
     }
 
     const keyId = process.env.RAZORPAY_KEY_ID;
     const keySecret = process.env.RAZORPAY_KEY_SECRET;
 
     if (!keyId || !keySecret) {
-        return NextResponse.json({ success: false, message: "Razorpay credentials are missing." });
+        return NextResponse.json({ success: false, message: "Razorpay credentials are missing." }, { status: 500 });
     }
 
     try {
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
 
         if (!orderResponse.ok) {
             const message = order?.error?.description || order?.error?.message || "Unable to create Razorpay order.";
-            return NextResponse.json({ success: false, message });
+            return NextResponse.json({ success: false, message }, { status: 502 });
         }
 
         return NextResponse.json({
@@ -79,6 +79,6 @@ export async function POST(request: NextRequest) {
             amount: amount * 100,
         });
     } catch (error: unknown) {
-        return NextResponse.json({ success: false, error });
+        return NextResponse.json({ success: false, message: "Failed to create order." }, { status: 500 });
     }
 }

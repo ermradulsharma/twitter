@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
             success: false,
             message: "Username, password, email and phone are required.",
-        });
+        }, { status: 400 });
     }
 
     const hashedPassword = await hashPassword(userData.password);
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
             success: false,
             message: "Secret key not found.",
-        });
+        }, { status: 500 });
     }
 
     try {
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({
                 success: false,
                 message: `${duplicateField} already exists.`,
-            });
+            }, { status: 409 });
         }
 
         if (!otp) {
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
 
         const verification = verifySignupOtp(signupKey, otp);
         if (!verification.success || !verification.pending) {
-            return NextResponse.json(verification);
+            return NextResponse.json(verification, { status: 400 });
         }
 
         const newUser = await prisma.user.create({

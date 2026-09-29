@@ -8,6 +8,7 @@ type PendingLoginOtp = {
     operatingSystem: string;
     deviceType: string;
     ipAddress: string;
+    attempts: number;
 };
 
 const OTP_TTL_MS = 5 * 60 * 1000;
@@ -37,6 +38,7 @@ export const saveLoginOtp = (payload: {
         operatingSystem: payload.operatingSystem,
         deviceType: payload.deviceType,
         ipAddress: payload.ipAddress,
+        attempts: 0,
     });
 
     return { otp, expiresAt: new Date(Date.now() + OTP_TTL_MS) };
@@ -49,7 +51,18 @@ export const verifyLoginOtp = (userId: string, otp: string) => {
         loginOtpStore.delete(userId);
         return { success: false, message: "The OTP has expired. Please request a new one." };
     }
-    if (pending.otp !== otp) return { success: false, message: "Incorrect OTP. Please try again." };
+    if (pending.attempts >= 5) {
+        loginOtpStore.delete(userId);
+        return { success: false, message: "Maximum verification attempts exceeded. Please request a new OTP." };
+    }
+    if (pending.otp !== otp) {
+        pending.attempts += 1;
+        if (pending.attempts >= 5) {
+            loginOtpStore.delete(userId);
+            return { success: false, message: "Maximum verification attempts exceeded. Please request a new OTP." };
+        }
+        return { success: false, message: `Incorrect OTP. ${5 - pending.attempts} attempts remaining.` };
+    }
 
     loginOtpStore.delete(userId);
     return { success: true as const, pending };

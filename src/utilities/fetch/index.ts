@@ -405,6 +405,7 @@ export const createNotification = async (
 
 export const markNotificationsRead = async () => {
     const response = await fetch(`${HOST_URL}/api/notifications/read`, {
+        method: "POST",
         next: {
             revalidate: 0,
         },

@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { prisma } from "@/prisma/client";
 
-export async function GET(request: NextRequest, { params: { username } }: { params: { username: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ username: string }> }) {
+    const { username } = await params;
     try {
         const tweets = await prisma.tweet.findMany({
             where: {

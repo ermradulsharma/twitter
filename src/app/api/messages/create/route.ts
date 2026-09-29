@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 
 import { prisma } from "@/prisma/client";
 import { verifyJwtToken } from "@/utilities/auth";
-import { createNotification } from "@/utilities/fetch";
+import { createNotificationDb } from "@/utilities/notifications";
 import { shouldCreateNotification } from "@/utilities/misc/shouldCreateNotification";
 import { UserProps } from "@/types/UserProps";
 
@@ -26,11 +26,6 @@ export async function POST(request: NextRequest) {
 
     if (!text?.trim() && !photoUrl) {
         return NextResponse.json({ success: false, message: "Message content cannot be empty." }, { status: 400 });
-    }
-
-    const secret = process.env.CREATION_SECRET_KEY;
-    if (!secret) {
-        return NextResponse.json({ success: false, message: "Secret key not found." }, { status: 500 });
     }
 
     try {
@@ -66,7 +61,7 @@ export async function POST(request: NextRequest) {
                 content: null,
             };
 
-            await createNotification(isRecipient.id, "message", secret, notificationContent);
+            await createNotificationDb(isRecipient.id, "message", notificationContent);
         }
 
         return NextResponse.json({ success: true });

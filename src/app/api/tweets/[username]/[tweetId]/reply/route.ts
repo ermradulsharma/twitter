@@ -3,10 +3,14 @@ import { cookies } from "next/headers";
 
 import { prisma } from "@/prisma/client";
 import { verifyJwtToken } from "@/utilities/auth";
-import { createNotification } from "@/utilities/fetch";
+import { createNotificationDb } from "@/utilities/notifications";
 import { UserProps } from "@/types/UserProps";
 
-export async function GET(request: NextRequest, { params: { tweetId } }: { params: { tweetId: string } }) {
+export async function GET(
+    request: NextRequest,
+    { params }: { params: Promise<{ tweetId: string; username: string }> }
+) {
+    const { tweetId } = await params;
     try {
         const tweets = await prisma.tweet.findMany({
             where: {
@@ -142,7 +146,7 @@ export async function POST(
                 },
             };
 
-            await createNotification(recipientUser.id, "reply", secret, notificationContent);
+            await createNotificationDb(recipientUser.id, "reply", notificationContent);
         }
 
         return NextResponse.json({ success: true });

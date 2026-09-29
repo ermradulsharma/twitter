@@ -3,12 +3,23 @@ import { createClient } from "@supabase/supabase-js";
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co";
 const KEY = process.env.NEXT_PUBLIC_SUPABASE_KEY || "placeholder-key";
 
-export const supabase = createClient(URL, KEY, {
-    auth: {
-        flowType: "pkce",
-        detectSessionInUrl: false,
-    },
-});
+const globalForSupabase = globalThis as typeof globalThis & {
+    supabaseClient?: ReturnType<typeof createClient>;
+};
+
+export const supabase =
+    globalForSupabase.supabaseClient ??
+    createClient(URL, KEY, {
+        auth: {
+            flowType: "pkce",
+            detectSessionInUrl: false,
+            persistSession: false,
+        },
+    });
+
+if (process.env.NODE_ENV !== "production") {
+    globalForSupabase.supabaseClient = supabase;
+}
 
 export const uploadFile = async (file: File) => {
     const extension = file.name && file.name.includes(".") ? file.name.split(".").pop() : "bin";

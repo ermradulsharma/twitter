@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 
 import { prisma } from "@/prisma/client";
 import { verifyJwtToken } from "@/utilities/auth";
-import { createNotification } from "@/utilities/fetch";
+import { createNotificationDb } from "@/utilities/notifications";
 import { UserProps } from "@/types/UserProps";
 
 export async function POST(
@@ -18,11 +18,6 @@ export async function POST(
 
     if (!verifiedToken) {
         return NextResponse.json({ success: false, message: "You are not authorized to perform this action." }, { status: 401 });
-    }
-
-    const secret = process.env.CREATION_SECRET_KEY;
-    if (!secret) {
-        return NextResponse.json({ success: false, message: "Secret key not found." }, { status: 500 });
     }
 
     try {
@@ -66,7 +61,7 @@ export async function POST(
                 content: { id: tweetId },
             };
 
-            await createNotification(recipientUser.id, "retweet", secret, notificationContent);
+            await createNotificationDb(recipientUser.id, "retweet", notificationContent);
         }
 
         return NextResponse.json({ success: true });

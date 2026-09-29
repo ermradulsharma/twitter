@@ -1,8 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 import { sendEmail } from "@/utilities/email/sendEmail";
+import { verifyJwtToken } from "@/utilities/auth";
 
 export async function POST(request: NextRequest) {
+    if (process.env.NODE_ENV !== "development") {
+        return NextResponse.json(
+            { success: false, message: "Test email endpoint is disabled in production." },
+            { status: 403 }
+        );
+    }
+
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    const verifiedToken = token ? await verifyJwtToken(token, request.nextUrl.origin) : null;
+
+    if (!verifiedToken) {
+        return NextResponse.json(
+            { success: false, message: "Unauthorized." },
+            { status: 401 }
+        );
+    }
+
     try {
         const { to } = await request.json();
 
@@ -35,3 +55,4 @@ export async function POST(request: NextRequest) {
         );
     }
 }
+

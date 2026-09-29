@@ -273,8 +273,10 @@ main {
     background-color: #000;
     color: #e7e9ea;
     min-height: 100vh;
+    overflow-x: hidden;
     overflow-x: clip;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 
     .x-landing-left,
     .x-landing-right {
@@ -287,6 +289,7 @@ main {
         justify-content: center;
         padding: clamp(2rem, 5vw, 4rem);
         overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
         background:
             radial-gradient(circle at top left, rgba(29, 155, 240, 0.14), transparent 35%),
             radial-gradient(circle at bottom right, rgba(29, 155, 240, 0.08), transparent 30%),

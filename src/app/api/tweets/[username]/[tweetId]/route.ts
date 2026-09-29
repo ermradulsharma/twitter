@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { prisma } from "@/prisma/client";
 
-export async function GET(request: NextRequest, { params: { tweetId } }: { params: { tweetId: string } }) {
+export async function GET(
+    request: NextRequest,
+    { params }: { params: Promise<{ tweetId: string; username: string }> }
+) {
+    const { tweetId } = await params;
     try {
         const tweet = await prisma.tweet.findUnique({
             where: {

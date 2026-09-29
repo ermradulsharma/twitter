@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 
 import { prisma } from "@/prisma/client";
 import { verifyJwtToken } from "@/utilities/auth";
-import { createNotification } from "@/utilities/fetch";
+import { createNotificationDb } from "@/utilities/notifications";
 import { UserProps } from "@/types/UserProps";
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ username: string }> }) {
@@ -15,11 +15,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     if (!verifiedToken) {
         return NextResponse.json({ success: false, message: "You are not authorized to perform this action." }, { status: 401 });
-    }
-
-    const secret = process.env.CREATION_SECRET_KEY;
-    if (!secret) {
-        return NextResponse.json({ success: false, message: "Secret key not found." }, { status: 500 });
     }
 
     try {
@@ -50,7 +45,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             content: null,
         };
 
-        await createNotification(recipientUser.id, "follow", secret, notificationContent);
+        await createNotificationDb(recipientUser.id, "follow", notificationContent);
 
         return NextResponse.json({ success: true });
     } catch (error: unknown) {

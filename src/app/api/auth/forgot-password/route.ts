@@ -115,7 +115,6 @@ export async function POST(request: NextRequest) {
                 requiresOtp: true,
                 deliveryMethod,
                 destination,
-                simulatedOtp: isDevelopment ? resetOtp : undefined,
                 message:
                     deliveryMethod === "phone"
                         ? "A verification code has been sent to your registered phone number."

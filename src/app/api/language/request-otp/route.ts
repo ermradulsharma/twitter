@@ -34,39 +34,35 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ success: false, message: "This language is already selected." });
         }
 
-        const sendToEmail = language === "fr";
-        const destination = sendToEmail ? user.email : user.phone;
+        const sendToEmail = Boolean(user.email);
+        const destination = user.email || user.phone;
 
         if (!destination) {
             return NextResponse.json({
                 success: false,
-                message: `No registered ${sendToEmail ? "email" : "phone number"} was found for this account.`,
+                message: "No registered email or phone number was found for this account.",
             });
         }
 
         const { otp, expiresAt } = saveLanguageOtp(user.id, language);
 
-        if (sendToEmail) {
+        if (user.email) {
             try {
                 await sendEmail({
-                    to: destination,
+                    to: user.email,
                     subject: "Twitter Clone - Language Verification OTP",
                     html: `
                     <h2>Twitter Clone</h2>
                     <h3>Language Verification</h3>
                     <p>Your 6-digit OTP is:</p>
                     <h1>${otp}</h1>
-                    <p>This OTP expires according to the existing verification flow.</p>
+                    <p>This OTP expires in 5 minutes.</p>
                 `,
                 });
             } catch (error: unknown) {
                 const message = error instanceof Error ? error.message : "Unable to send language verification email.";
                 return NextResponse.json({ success: false, message });
             }
-        } else {
-            console.info(
-                `Simulated language OTP for ${languageLabels[language]} sent to ${sendToEmail ? "email" : "phone"} ${destination}: ${otp}`
-            );
         }
 
         return NextResponse.json({
@@ -74,8 +70,6 @@ export async function POST(request: NextRequest) {
             deliveryMethod: sendToEmail ? "email" : "phone",
             destination,
             expiresAt,
-            // This is intentionally returned because this app has no real email/SMS provider.
-            simulatedOtp: otp,
         });
     } catch (error) {
         console.error("LANGUAGE OTP ERROR:", error);

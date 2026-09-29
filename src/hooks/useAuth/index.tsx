@@ -27,25 +27,40 @@ export default function useAuth() {
     const [token, setToken] = React.useState<VerifiedToken>(null);
     const [isPending, setIsPending] = React.useState<boolean>(true);
 
-    const getVerifiedToken = async () => {
+    const getVerifiedToken = React.useCallback(async () => {
         setIsPending(true);
-        const cookies = new Cookies();
-        const rawToken = cookies.get("token") ?? null;
-        const verifiedToken = rawToken ? decodeClientJwt(rawToken) : null;
-        setToken(verifiedToken);
-        setIsPending(false);
-    };
+        try {
+            const res = await fetch("/api/auth/me", { cache: "no-store" });
+            const data = await res.json();
+            if (data.success && data.user) {
+                setToken(data.user);
+            } else {
+                setToken(null);
+            }
+        } catch {
+            setToken(null);
+        } finally {
+            setIsPending(false);
+        }
+    }, []);
 
-    const refreshToken = async () => {
-        const cookies = new Cookies();
-        const rawToken = cookies.get("token") ?? null;
-        const verifiedToken = rawToken ? decodeClientJwt(rawToken) : null;
-        setToken(verifiedToken);
-    };
+    const refreshToken = React.useCallback(async () => {
+        try {
+            const res = await fetch("/api/auth/me", { cache: "no-store" });
+            const data = await res.json();
+            if (data.success && data.user) {
+                setToken(data.user);
+            } else {
+                setToken(null);
+            }
+        } catch {
+            setToken(null);
+        }
+    }, []);
 
     React.useEffect(() => {
         getVerifiedToken();
-    }, []);
+    }, [getVerifiedToken]);
 
     return { token, isPending, refreshToken };
 }

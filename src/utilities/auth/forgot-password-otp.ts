@@ -9,6 +9,7 @@ type PendingForgotPassword = {
     resetToken: string;
     identifier: string;
     requestedAt: number;
+    attempts: number;
 };
 
 const globalForForgotPasswordOtp = globalThis as typeof globalThis & {
@@ -53,6 +54,7 @@ export const saveForgotPasswordOtp = (key: string, userId: string, options?: { o
         resetToken,
         identifier: key,
         requestedAt,
+        attempts: 0,
     });
 
     return { otp, expiresAt: new Date(Date.now() + OTP_TTL_MS), resetToken };
@@ -90,7 +92,18 @@ export const verifyForgotPasswordOtp = (key: string, otp: string) => {
         forgotPasswordOtpStore.delete(key);
         return { success: false, message: "The OTP has expired. Please request a new one." };
     }
-    if (pending.otp !== otp) return { success: false, message: "Incorrect OTP. Please try again." };
+    if (pending.attempts >= 5) {
+        forgotPasswordOtpStore.delete(key);
+        return { success: false, message: "Maximum verification attempts exceeded. Please request a new OTP." };
+    }
+    if (pending.otp !== otp) {
+        pending.attempts += 1;
+        if (pending.attempts >= 5) {
+            forgotPasswordOtpStore.delete(key);
+            return { success: false, message: "Maximum verification attempts exceeded. Please request a new OTP." };
+        }
+        return { success: false, message: `Incorrect OTP. ${5 - pending.attempts} attempts remaining.` };
+    }
 
     return { success: true as const, pending };
 };

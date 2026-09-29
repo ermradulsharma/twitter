@@ -5,7 +5,7 @@ import { prisma } from "@/prisma/client";
 import { verifyJwtToken } from "@/utilities/auth";
 import { UserProps } from "@/types/UserProps";
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
     const verifiedToken = token ? ((await verifyJwtToken(token, request.nextUrl.origin)) as unknown as UserProps) : null;
@@ -27,4 +27,8 @@ export async function GET(request: NextRequest) {
         const message = error instanceof Error ? error.message : "Failed to mark notifications read.";
         return NextResponse.json({ success: false, message }, { status: 500 });
     }
+}
+
+export async function GET(request: NextRequest) {
+    return POST(request);
 }
