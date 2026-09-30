@@ -26,9 +26,10 @@ import {
 import { FaEllipsisH } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 
+import { useQuery } from "@tanstack/react-query";
 import NewTweetDialog from "../dialog/NewTweetDialog";
 import LogOutDialog from "../dialog/LogOutDialog";
-import { logout } from "@/utilities/fetch";
+import { logout, getUser } from "@/utilities/fetch";
 import { AuthContext } from "@/context/AuthContext";
 import { getFullURL } from "@/utilities/misc/getFullURL";
 import UnreadNotificationsBadge from "../misc/UnreadNotificationsBadge";
@@ -79,6 +80,15 @@ export default function LeftSidebar() {
     const isProfile = token ? pathname.startsWith(`/${token.username}`) : false;
     const isSettings = pathname.startsWith("/settings");
 
+    const { data: userData } = useQuery({
+        queryKey: ["users", token?.username],
+        queryFn: () => (token?.username ? getUser(token.username) : null),
+        enabled: !!token?.username,
+    });
+
+    const userProfile = userData?.user || token;
+    const avatarSrc = userProfile?.photoUrl ? getFullURL(userProfile.photoUrl) : "/assets/egg.jpg";
+
     return (
         <>
             <aside className="left-sidebar">
@@ -91,141 +101,36 @@ export default function LeftSidebar() {
                         </Link>
                         <nav>
                             <ul>
-                                {token && (
-                                    <li>
-                                        <Link href="/home">
-                                            <div className={`nav-link ${isHome ? "active" : ""}`}>
-                                                {isHome ? <RiHome5Fill /> : <RiHome5Line />} <span className="nav-title">{t("nav.home")}</span>
-                                            </div>
-                                        </Link>
-                                    </li>
-                                )}
-                                <li>
-                                    <Link href="/explore">
-                                        <div className={`nav-link ${isExplore ? "active" : ""}`}>
-                                            <RiHashtag /> <span className="nav-title">{t("nav.explore")}</span>
-                                        </div>
-                                    </Link>
-                                </li>
+                                {token && (<li><Link href="/home"><div className={`nav-link ${isHome ? "active" : ""}`}>{isHome ? <RiHome5Fill /> : <RiHome5Line />} <span className="nav-title">{t("nav.home")}</span></div></Link></li>)}
+                                <li><Link href="/explore"><div className={`nav-link ${isExplore ? "active" : ""}`}><RiHashtag /> <span className="nav-title">{t("nav.explore")}</span></div></Link></li>
                                 {token && (
                                     <>
-                                        <li>
-                                            <Link href="/notifications">
-                                                <div className={`nav-link ${isNotifications ? "active" : ""}`}>
-                                                    <div className="badge-wrapper">
-                                                        {isNotifications ? <RiNotification3Fill /> : <RiNotification3Line />} <UnreadNotificationsBadge />
-                                                    </div>
-                                                    <span className="nav-title">{t("nav.notifications")}</span>
-                                                </div>
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link href="/messages">
-                                                <div className={`nav-link ${isMessages ? "active" : ""}`}>
-                                                    <div className="badge-wrapper">
-                                                        {isMessages ? <RiMailFill /> : <RiMailLine />}
-                                                    </div>
-                                                    <span className="nav-title">{t("nav.messages")}</span>
-                                                </div>
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link href="/bookmarks">
-                                                <div className={`nav-link ${isBookmarks ? "active" : ""}`}>
-                                                    {isBookmarks ? <RiBookmarkFill /> : <RiBookmarkLine />} <span className="nav-title">Bookmarks</span>
-                                                </div>
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link href="/settings">
-                                                <div className={`nav-link ${isSettings && pathname.includes("premium") ? "active" : ""}`}>
-                                                    <RiVipCrownLine /> <span className="nav-title">Premium</span>
-                                                </div>
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link href={`/${token.username}`}>
-                                                <div className={`nav-link ${isProfile ? "active" : ""}`}>
-                                                    {isProfile ? <RiUser3Fill /> : <RiUser3Line />} <span className="nav-title">{t("nav.profile")}</span>
-                                                </div>
-                                            </Link>
-                                        </li>
+                                        <li><Link href="/notifications"><div className={`nav-link ${isNotifications ? "active" : ""}`}><div className="badge-wrapper">{isNotifications ? <RiNotification3Fill /> : <RiNotification3Line />} <UnreadNotificationsBadge /></div><span className="nav-title">{t("nav.notifications")}</span></div></Link></li>
+                                        <li><Link href="/messages"><div className={`nav-link ${isMessages ? "active" : ""}`}><div className="badge-wrapper">{isMessages ? <RiMailFill /> : <RiMailLine />}</div><span className="nav-title">{t("nav.messages")}</span></div></Link></li>
+                                        <li><Link href="/bookmarks"><div className={`nav-link ${isBookmarks ? "active" : ""}`}>{isBookmarks ? <RiBookmarkFill /> : <RiBookmarkLine />} <span className="nav-title">Bookmarks</span></div></Link></li>
+                                        <li><Link href="/settings"><div className={`nav-link ${isSettings && pathname.includes("premium") ? "active" : ""}`}><RiVipCrownLine /> <span className="nav-title">Premium</span></div></Link></li>
+                                        <li><Link href={`/${token.username}`}><div className={`nav-link ${isProfile ? "active" : ""}`}>{isProfile ? <RiUser3Fill /> : <RiUser3Line />} <span className="nav-title">{t("nav.profile")}</span></div></Link></li>
                                     </>
                                 )}
-                                <li>
-                                    <Link href="/settings">
-                                        <div className={`nav-link ${isSettings ? "active" : ""}`}>
-                                            {isSettings ? <RiSettings5Fill /> : <RiSettings5Line />} <span className="nav-title">{t("nav.settings")}</span>
-                                        </div>
-                                    </Link>
-                                </li>
+                                <li><Link href="/settings"><div className={`nav-link ${isSettings ? "active" : ""}`}>{isSettings ? <RiSettings5Fill /> : <RiSettings5Line />} <span className="nav-title">{t("nav.settings")}</span></div></Link></li>
                             </ul>
                         </nav>
                         {token && (
                             <>
-                                <button onClick={handleNewTweetClick} className="btn btn-tweet" style={{ backgroundColor: "#1d9bf0", color: "#ffffff", fontWeight: 800 }}>
-                                    Post
-                                </button>
+                                <button onClick={handleNewTweetClick} className="btn btn-tweet" style={{ backgroundColor: "#1d9bf0", color: "#ffffff", fontWeight: 800 }}>Post</button>
                                 <button onClick={handleAnchorClick} className="side-profile">
+                                    <div><Avatar className="avatar" alt={userProfile?.name ?? ""} src={avatarSrc} /></div>
                                     <div>
-                                        <Avatar
-                                            className="avatar"
-                                            alt=""
-                                            src={token.photoUrl ? getFullURL(token.photoUrl) : "/assets/egg.jpg"}
-                                        />
+                                        <div className="token-name">{userProfile?.name ? userProfile.name : userProfile?.username ?? ""} {userProfile?.isPremium && (<span className="blue-tick" data-blue="Verified Blue"><img className="premium-badge" src="/icons/twitter-verified.svg" alt="" aria-hidden="true" /></span>)}</div>
+                                        <div className="text-muted token-username">@{userProfile?.username ?? ""}</div>
                                     </div>
-                                    <div>
-                                        <div className="token-name">
-                                            {token.name !== "" ? token.name : token.username}
-                                            {token.isPremium && (
-                                                <span className="blue-tick" data-blue="Verified Blue">
-                                                    <img className="premium-badge" src="/icons/twitter-verified.svg" alt="" aria-hidden="true" />
-                                                </span>
-                                            )}
-                                        </div>
-                                        <div className="text-muted token-username">@{token.username}</div>
-                                    </div>
-                                    <div className="three-dots">
-                                        <FaEllipsisH />
-                                    </div>
+                                    <div className="three-dots"><FaEllipsisH /></div>
                                 </button>
-                                <Menu
-                                    anchorEl={anchorEl}
-                                    onClose={handleAnchorClose}
-                                    open={Boolean(anchorEl)}
-                                    classes={{ paper: "profile-menu-paper", list: "profile-menu-list" }}
-                                    slotProps={{ list: { disablePadding: true } }}
-                                    anchorOrigin={{
-                                        vertical: "bottom",
-                                        horizontal: "right",
-                                    }}
-                                    transformOrigin={{
-                                        vertical: "bottom",
-                                        horizontal: "right",
-                                    }}
-                                >
-                                    <MenuItem className="profile-menu-item" onClick={handleAnchorClose}>
-                                        <Link className="profile-menu-link" href={`/${token.username}`}>
-                                            <RiUser3Line />
-                                            <span>{t("nav.profile")}</span>
-                                        </Link>
-                                    </MenuItem>
-                                    <MenuItem className="profile-menu-item" onClick={handleAnchorClose}>
-                                        <Link className="profile-menu-link" href={`/${token.username}/edit`}>
-                                            <RiEdit2Line />
-                                            <span>{t("nav.editProfile")}</span>
-                                        </Link>
-                                    </MenuItem>
-                                    <MenuItem className="profile-menu-item" onClick={handleAnchorClose}>
-                                        <Link className="profile-menu-link" href="/settings">
-                                            <RiSettings5Line />
-                                            <span>{t("nav.settings")}</span>
-                                        </Link>
-                                    </MenuItem>
-                                    <MenuItem className="profile-menu-item logout" onClick={handleLogOutClick}>
-                                        <RiLogoutBoxRLine />
-                                        <span>{t("nav.logout")}</span>
-                                    </MenuItem>
+                                <Menu anchorEl={anchorEl} onClose={handleAnchorClose} open={Boolean(anchorEl)} classes={{ paper: "profile-menu-paper", list: "profile-menu-list" }} slotProps={{ list: { disablePadding: true } }} anchorOrigin={{ vertical: "bottom", horizontal: "right" }} transformOrigin={{ vertical: "bottom", horizontal: "right" }}>
+                                    <MenuItem className="profile-menu-item" onClick={handleAnchorClose}><Link className="profile-menu-link" href={`/${token.username}`}><RiUser3Line /><span>{t("nav.profile")}</span></Link></MenuItem>
+                                    <MenuItem className="profile-menu-item" onClick={handleAnchorClose}><Link className="profile-menu-link" href={`/${token.username}/edit`}><RiEdit2Line /> <span>{t("nav.editProfile")}</span></Link></MenuItem>
+                                    <MenuItem className="profile-menu-item" onClick={handleAnchorClose}><Link className="profile-menu-link" href="/settings"><RiSettings5Line /> <span>{t("nav.settings")}</span></Link></MenuItem>
+                                    <MenuItem className="profile-menu-item logout" onClick={handleLogOutClick}><RiLogoutBoxRLine /><span>{t("nav.logout")}</span></MenuItem>
                                 </Menu>
                             </>
                         )}
@@ -235,12 +140,7 @@ export default function LeftSidebar() {
             {token && (
                 <>
                     <NewTweetDialog open={isNewTweetOpen} handleNewTweetClose={handleNewTweetClose} token={token} />
-                    <LogOutDialog
-                        open={isLogOutOpen}
-                        handleLogOutClose={handleLogOutClose}
-                        logout={handleLogout}
-                        isLoggingOut={isLoggingOut}
-                    />
+                    <LogOutDialog open={isLogOutOpen} handleLogOutClose={handleLogOutClose} logout={handleLogout} isLoggingOut={isLoggingOut} />
                 </>
             )}
         </>
