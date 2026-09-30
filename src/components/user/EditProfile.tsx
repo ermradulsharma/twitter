@@ -198,28 +198,28 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                     <TextField fullWidth name="website" label="Website" value={formik.values.website} onChange={formik.handleChange} onBlur={formik.handleBlur} error={formik.touched.website && Boolean(formik.errors.website)} helperText={formik.touched.website && formik.errors.website} sx={{ "& .MuiOutlinedInput-root": { color: "var(--twitter-black)", borderRadius: "8px", "& fieldset": { borderColor: "var(--border-color)" }, "&:hover fieldset": { borderColor: "var(--twitter-muted)" }, "&.Mui-focused fieldset": { borderColor: "#1d9bf0" }, }, "& .MuiInputLabel-root": { color: "var(--twitter-muted)" }, }} />
                     <TextField fullWidth name="email" label="Email" value={formik.values.email} onChange={formik.handleChange} onBlur={formik.handleBlur} error={formik.touched.email && Boolean(formik.errors.email)} helperText={formik.touched.email && formik.errors.email} sx={{ "& .MuiOutlinedInput-root": { color: "var(--twitter-black)", borderRadius: "8px", "& fieldset": { borderColor: "var(--border-color)" }, "&:hover fieldset": { borderColor: "var(--twitter-muted)" }, "&.Mui-focused fieldset": { borderColor: "#1d9bf0" }, }, "& .MuiInputLabel-root": { color: "var(--twitter-muted)" }, }} />
                     <TextField fullWidth name="phone" label="Phone" value={formik.values.phone} onChange={formik.handleChange} onBlur={formik.handleBlur} error={formik.touched.phone && Boolean(formik.errors.phone)} helperText={formik.touched.phone && formik.errors.phone} sx={{ "& .MuiOutlinedInput-root": { color: "var(--twitter-black)", borderRadius: "8px", "& fieldset": { borderColor: "var(--border-color)" }, "&:hover fieldset": { borderColor: "var(--twitter-muted)" }, "&.Mui-focused fieldset": { borderColor: "#1d9bf0" }, }, "& .MuiInputLabel-root": { color: "var(--twitter-muted)" }, }} />
-                    <Box sx={{ border: "1px solid var(--border-color)", borderRadius: "8px", p: 2 }}>
-                        <FormControlLabel control={<Switch checked={formik.values.browserNotificationsEnabled} onChange={async (event) => {
-                            const enabled = event.target.checked;
-                            if (enabled && typeof window !== "undefined" && "Notification" in window) {
-                                const permission = await Notification.requestPermission();
-                                if (permission !== "granted") {
-                                    formik.setFieldValue("browserNotificationsEnabled", false);
-                                    setSnackbar({
-                                        message: "Please allow browser notifications to use this feature.",
-                                        severity: "error",
-                                        open: true,
-                                    });
-                                    return;
-                                }
+                    {/* <Box sx={{ border: "1px solid var(--border-color)", borderRadius: "8px", p: 2 }}> */}
+                    {/* <Typography sx={{ color: "var(--twitter-muted)", fontSize: "0.85rem", mb: 1, fontWeight: 600 }}>Preferred Language</Typography> */}
+                    <LanguageSelector currentLanguage={profile.preferredLanguage ?? "en"} refreshToken={refreshToken} />
+                    {/* </Box> */}
+                    {/* <Box sx={{ border: "1px solid var(--border-color)", borderRadius: "8px", p: 2 }}> */}
+                    <FormControlLabel control={<Switch checked={formik.values.browserNotificationsEnabled} onChange={async (event) => {
+                        const enabled = event.target.checked;
+                        if (enabled && typeof window !== "undefined" && "Notification" in window) {
+                            const permission = await Notification.requestPermission();
+                            if (permission !== "granted") {
+                                formik.setFieldValue("browserNotificationsEnabled", false);
+                                setSnackbar({
+                                    message: "Please allow browser notifications to use this feature.",
+                                    severity: "error",
+                                    open: true,
+                                });
+                                return;
                             }
-                            formik.setFieldValue("browserNotificationsEnabled", enabled);
-                        }} name="browserNotificationsEnabled" />} label={<Typography sx={{ color: "var(--twitter-black)", fontSize: "0.95rem", fontWeight: 600 }}>Enable Browser Notifications</Typography>} />
-                    </Box>
-                    <Box sx={{ border: "1px solid var(--border-color)", borderRadius: "8px", p: 2 }}>
-                        <Typography sx={{ color: "var(--twitter-muted)", fontSize: "0.85rem", mb: 1, fontWeight: 600 }}>Preferred Language</Typography>
-                        <LanguageSelector currentLanguage={profile.preferredLanguage ?? "en"} refreshToken={refreshToken} />
-                    </Box>
+                        }
+                        formik.setFieldValue("browserNotificationsEnabled", enabled);
+                    }} name="browserNotificationsEnabled" />} label={<Typography sx={{ color: "var(--twitter-black)", fontSize: "0.95rem", fontWeight: 600 }}>Enable Browser Notifications</Typography>} />
+                    {/* </Box> */}
                 </Box>
             </Box>
             {snackbar.open && <CustomSnackbar message={snackbar.message} severity={snackbar.severity} setSnackbar={setSnackbar} />}
