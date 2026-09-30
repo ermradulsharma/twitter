@@ -12,9 +12,6 @@ import {
     Box,
     Collapse,
     Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
     Grid,
     InputAdornment,
     List,
@@ -28,7 +25,20 @@ import {
     Typography,
 } from "@mui/material";
 import type { Theme } from "@mui/material/styles";
-import { FaArrowLeft, FaChevronDown, FaChevronRight, FaClock, FaDesktop, FaLocationDot, FaMobileScreenButton, FaTabletScreenButton } from "react-icons/fa6";
+import {
+    FaArrowLeft,
+    FaChevronDown,
+    FaChevronRight,
+    FaDesktop,
+    FaLocationDot,
+    FaMobileScreenButton,
+    FaTabletScreenButton,
+    FaCheck,
+    FaShieldHalved,
+    FaGlobe,
+    FaPalette,
+    FaCrown,
+} from "react-icons/fa6";
 import { MdSearch } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 
@@ -63,7 +73,7 @@ function LoginHistorySessionRow({ entry, isCurrent }: { entry: LoginHistoryProps
     const DeviceIcon = getSessionDeviceIcon(entry.deviceType);
 
     return (
-        <div style={{ borderBottom: "1px solid #2f3336" }}>
+        <Box sx={{ borderBottom: "1px solid var(--border-color)" }}>
             <button
                 type="button"
                 onClick={() => setOpen((value) => !value)}
@@ -71,8 +81,8 @@ function LoginHistorySessionRow({ entry, isCurrent }: { entry: LoginHistoryProps
                     width: "100%",
                     display: "flex",
                     alignItems: "center",
-                    gap: 12,
-                    padding: "12px 16px",
+                    gap: 14,
+                    padding: "14px 16px",
                     border: 0,
                     background: "transparent",
                     color: "inherit",
@@ -80,95 +90,103 @@ function LoginHistorySessionRow({ entry, isCurrent }: { entry: LoginHistoryProps
                     cursor: "pointer",
                 }}
             >
-                <div style={{ position: "relative", flexShrink: 0 }}>
-                    <div
-                        style={{
-                            width: 40,
-                            height: 40,
+                <Box sx={{ position: "relative", flexShrink: 0 }}>
+                    <Box
+                        sx={{
+                            width: 42,
+                            height: 42,
                             borderRadius: "999px",
-                            backgroundColor: "#202327",
+                            backgroundColor: "var(--hover)",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            color: "#e7e9ea",
+                            color: "var(--twitter-black)",
                         }}
                     >
                         <DeviceIcon size={18} />
-                    </div>
-                    {open && (
+                    </Box>
+                    {isCurrent && (
                         <span
                             style={{
                                 position: "absolute",
-                                right: -1,
-                                bottom: -1,
-                                width: 10,
-                                height: 10,
+                                right: 0,
+                                bottom: 0,
+                                width: 11,
+                                height: 11,
                                 borderRadius: "999px",
-                                backgroundColor: "#1d9bf0",
-                                border: "2px solid #000",
+                                backgroundColor: "#00ba7c",
+                                border: "2px solid var(--background-primary)",
                             }}
                         />
                     )}
-                </div>
+                </Box>
 
-                <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                        <span style={{ fontSize: 15, fontWeight: 700, color: "#e7e9ea", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                <Box sx={{ minWidth: 0, flex: 1 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+                        <Typography sx={{ fontSize: "0.95rem", fontWeight: 700, color: "var(--twitter-black)" }}>
                             {entry.browser}
-                        </span>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false" style={{ flexShrink: 0, color: "#71767b" }}>
-                            <path d="M4 5.5C4 4.11929 5.11929 3 6.5 3h11C18.8807 3 20 4.11929 20 5.5v13c0 1.3807-1.1193 2.5-2.5 2.5h-11C5.11929 21 4 19.8807 4 18.5v-13ZM6.5 4.5c-.55228 0-1 .44772-1 1v13c0 .5523.44772 1 1 1h11c.5523 0 1-.4477 1-1v-13c0-.55228-.4477-1-1-1h-11ZM8 7h8v1.5H8V7Zm0 4.25h8v1.5H8v-1.5Zm0 4.25h5v1.5H8v-1.5Z" fill="currentColor" />
-                        </svg>
-                        <span style={{ fontSize: 15, fontWeight: 700, color: "#e7e9ea", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        </Typography>
+                        <Typography sx={{ fontSize: "0.85rem", color: "var(--twitter-muted)" }}>•</Typography>
+                        <Typography sx={{ fontSize: "0.95rem", fontWeight: 600, color: "var(--twitter-black)" }}>
                             {entry.operatingSystem}
-                        </span>
-                        <span style={{ fontSize: 12, fontWeight: 600, color: "#71767b", border: "1px solid #2f3336", padding: "2px 8px", borderRadius: 999 }}>
-                            {isCurrent ? "Current device" : "New device"}
-                        </span>
-                    </div>
+                        </Typography>
+                        <Chip
+                            size="small"
+                            label={isCurrent ? "Current session" : "Active device"}
+                            sx={{
+                                height: 22,
+                                fontSize: "0.72rem",
+                                fontWeight: 700,
+                                backgroundColor: isCurrent ? "rgba(29, 155, 240, 0.12)" : "var(--hover)",
+                                color: isCurrent ? "#1d9bf0" : "var(--twitter-muted)",
+                                borderRadius: 999,
+                                border: isCurrent ? "1px solid rgba(29, 155, 240, 0.3)" : "none",
+                            }}
+                        />
+                    </Box>
 
-                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 2, fontSize: 13, color: "#71767b" }}>
-                        <span style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
-                            <FaLocationDot size={12} />
-                            <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{entry.deviceType}</span>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: "2px", fontSize: "0.8125rem", color: "var(--twitter-muted)" }}>
+                        <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                            <FaLocationDot size={11} />
+                            <span>{entry.deviceType}</span>
                         </span>
                         <span>•</span>
-                        <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{entry.ipAddress}</span>
-                    </div>
-                </div>
+                        <span>{entry.ipAddress}</span>
+                    </Box>
+                </Box>
 
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8, flexShrink: 0 }}>
-                    <span style={{ fontSize: 12, color: "#71767b", whiteSpace: "nowrap" }}>{formatDate(entry.loginTime)}</span>
+                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 1, flexShrink: 0 }}>
+                    <Typography sx={{ fontSize: "0.78rem", color: "var(--twitter-muted)" }}>{formatDate(entry.loginTime)}</Typography>
                     <FaChevronDown
-                        size={14}
+                        size={13}
                         style={{
-                            color: "#71767b",
+                            color: "var(--twitter-muted)",
                             transform: open ? "rotate(180deg)" : "none",
                             transition: "transform 180ms ease",
                         }}
                     />
-                </div>
+                </Box>
             </button>
 
-            <Collapse in={open} timeout={220} unmountOnExit>
-                <div style={{ padding: "0 16px 16px 56px" }}>
-                    <div style={{ borderTop: "1px solid #2f3336", paddingTop: 12, display: "flex", flexDirection: "column", gap: 10 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 13 }}>
-                        <span style={{ color: "#71767b" }}>Signed in</span>
-                        <span style={{ color: "#e7e9ea", textAlign: "right" }}>{formatDateExtended(entry.loginTime)}</span>
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 13 }}>
-                        <span style={{ color: "#71767b" }}>IP address</span>
-                        <span style={{ color: "#e7e9ea", textAlign: "right", wordBreak: "break-word" }}>{entry.ipAddress}</span>
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 13 }}>
-                        <span style={{ color: "#71767b" }}>Last active</span>
-                        <span style={{ color: "#e7e9ea", textAlign: "right" }}>{formatDateExtended(entry.loginTime)}</span>
-                    </div>
-                    </div>
-                </div>
+            <Collapse in={open} timeout={200} unmountOnExit>
+                <Box sx={{ px: 2, pb: 2, pl: 7 }}>
+                    <Box sx={{ borderTop: "1px solid var(--border-color)", pt: 1.5, display: "flex", flexDirection: "column", gap: 1 }}>
+                        <Box sx={{ display: "flex", justifyContent: "space-between", gap: 2, fontSize: "0.82rem" }}>
+                            <Typography sx={{ color: "var(--twitter-muted)" }}>Signed in time</Typography>
+                            <Typography sx={{ fontWeight: 600, color: "var(--twitter-black)", textAlign: "right" }}>{formatDateExtended(entry.loginTime)}</Typography>
+                        </Box>
+                        <Box sx={{ display: "flex", justifyContent: "space-between", gap: 2, fontSize: "0.82rem" }}>
+                            <Typography sx={{ color: "var(--twitter-muted)" }}>IP Address</Typography>
+                            <Typography sx={{ fontWeight: 600, color: "var(--twitter-black)", textAlign: "right" }}>{entry.ipAddress}</Typography>
+                        </Box>
+                        <Box sx={{ display: "flex", justifyContent: "space-between", gap: 2, fontSize: "0.82rem" }}>
+                            <Typography sx={{ color: "var(--twitter-muted)" }}>Last active</Typography>
+                            <Typography sx={{ fontWeight: 600, color: "var(--twitter-black)", textAlign: "right" }}>{formatDateExtended(entry.loginTime)}</Typography>
+                        </Box>
+                    </Box>
+                </Box>
             </Collapse>
-        </div>
+        </Box>
     );
 }
 
@@ -184,23 +202,49 @@ export default function SettingsPage() {
         email: string;
     } | null>(null);
     const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+    const [accentColor, setAccentColor] = useState("#1d9bf0");
+
     const { isLoading, data } = useQuery({
         queryKey: ["login-history"],
         queryFn: getLoginHistory,
         enabled: !!token,
     });
 
-    // UI-only state for the nested X-style settings navigation. No backend/logic impact.
-    const [activeSection, setActiveSection] = useState<SettingsSection | null>(null);
+    const [activeSection, setActiveSection] = useState<SettingsSection | null>("theme");
     const [searchQuery, setSearchQuery] = useState("");
 
     const loginHistory: LoginHistoryProps[] = data?.loginHistory ?? [];
     const subscriptionPlans = [
-        { key: "FREE" as const, name: t("settings.free"), price: `\u20B90${t("settings.month")}`, tweets: t("settings.subscriptionCardOneTweet") },
-        { key: "BRONZE" as const, name: t("settings.bronze"), price: `\u20B9100${t("settings.month")}`, tweets: t("settings.subscriptionCardThreeTweets") },
-        { key: "SILVER" as const, name: t("settings.silver"), price: `\u20B9300${t("settings.month")}`, tweets: t("settings.subscriptionCardFiveTweets") },
-        { key: "GOLD" as const, name: t("settings.gold"), price: `\u20B91000${t("settings.month")}`, tweets: t("settings.subscriptionCardUnlimitedTweets") },
+        {
+            key: "FREE" as const,
+            name: t("settings.free"),
+            price: `\u20B90${t("settings.month")}`,
+            tweets: t("settings.subscriptionCardOneTweet"),
+            features: ["Post up to 280 characters", "Basic feed access", "Standard support"],
+        },
+        {
+            key: "BRONZE" as const,
+            name: t("settings.bronze"),
+            price: `\u20B9100${t("settings.month")}`,
+            tweets: t("settings.subscriptionCardThreeTweets"),
+            features: ["Edit posts", "Bookmark folders", "Small reply boost"],
+        },
+        {
+            key: "SILVER" as const,
+            name: t("settings.silver"),
+            price: `\u20B9300${t("settings.month")}`,
+            tweets: t("settings.subscriptionCardFiveTweets"),
+            features: ["Verified Checkmark Badge", "Half ads in For You", "Creator Revenue Sharing eligibility", "Prioritized rankings"],
+        },
+        {
+            key: "GOLD" as const,
+            name: t("settings.gold"),
+            price: `\u20B91000${t("settings.month")}`,
+            tweets: t("settings.subscriptionCardUnlimitedTweets"),
+            features: ["Verified Gold Checkmark", "No ads in For You & Following", "Maximum reply boost", "Write articles & long posts", "X Pro access"],
+        },
     ];
+
     const loadRazorpayScript = () => {
         return new Promise<boolean>((resolve) => {
             if (window.Razorpay) return resolve(true);
@@ -248,72 +292,72 @@ export default function SettingsPage() {
                 return;
             }
 
-                const response = await createSubscriptionOrder(plan);
-                const planName = subscriptionPlans.find((item) => item.key === plan)?.name ?? plan;
+            const response = await createSubscriptionOrder(plan);
+            const planName = subscriptionPlans.find((item) => item.key === plan)?.name ?? plan;
 
-                const isDevMock = response.order?.id?.startsWith("order_dev_") || response.keyId?.includes("placeholder");
+            const isDevMock = response.order?.id?.startsWith("order_dev_") || response.keyId?.includes("placeholder");
 
-                const options = {
-                    key: response.keyId,
-                    amount: response.order.amount,
-                    currency: response.order.currency,
-                    name: "Twitter Subscription",
-                    description: `${planName} subscription`,
-                    order_id: response.order.id,
-                    handler: (razorpayResponse: Record<string, string>) => {
-                        void (async () => {
-                            const activation = await activateSubscription(plan, {
-                                razorpayPaymentId: razorpayResponse.razorpay_payment_id ?? `pay_dev_${Date.now()}`,
-                                razorpayOrderId: razorpayResponse.razorpay_order_id ?? response.order.id,
-                                razorpaySignature: razorpayResponse.razorpay_signature ?? "sig_dev_mock",
-                            });
-
-                            await refreshToken();
-                            setSelectedPlan(plan);
-                            setActivatedSubscription({
-                                plan,
-                                email: token.email ?? "",
-                            });
-                            setPaymentMessage(`Subscription activated successfully for ${planName} plan.`);
-                            setPaymentToastOpen(true);
-                        })().catch((error: unknown) => {
-                            setActivatedSubscription(null);
-                            setPaymentMessage(error instanceof Error ? error.message : "Something went wrong.");
-                            setPaymentToastOpen(true);
+            const options = {
+                key: response.keyId,
+                amount: response.order.amount,
+                currency: response.order.currency,
+                name: "X Subscription",
+                description: `${planName} subscription`,
+                order_id: response.order.id,
+                handler: (razorpayResponse: Record<string, string>) => {
+                    void (async () => {
+                        await activateSubscription(plan, {
+                            razorpayPaymentId: razorpayResponse.razorpay_payment_id ?? `pay_dev_${Date.now()}`,
+                            razorpayOrderId: razorpayResponse.razorpay_order_id ?? response.order.id,
+                            razorpaySignature: razorpayResponse.razorpay_signature ?? "sig_dev_mock",
                         });
-                    },
-                    prefill: {
-                        name: token.name ?? token.username,
-                        email: token.email ?? "",
-                        contact: token.phone ?? "",
-                    },
-                    notes: {
-                        username: token.username,
-                        plan,
-                    },
-                    theme: {
-                        color: "#1d9bf0",
-                    },
-                };
 
-                setSelectedPlan(plan);
-
-                if (isDevMock) {
-                    console.log("[Dev Mode] Auto-activating mock subscription order:", response.order.id);
-                    options.handler({
-                        razorpay_payment_id: `pay_dev_${Date.now()}`,
-                        razorpay_order_id: response.order.id,
-                        razorpay_signature: "sig_dev_mock",
+                        await refreshToken();
+                        setSelectedPlan(plan);
+                        setActivatedSubscription({
+                            plan,
+                            email: token.email ?? "",
+                        });
+                        setPaymentMessage(`Subscription activated successfully for ${planName} plan.`);
+                        setPaymentToastOpen(true);
+                    })().catch((error: unknown) => {
+                        setActivatedSubscription(null);
+                        setPaymentMessage(error instanceof Error ? error.message : "Something went wrong.");
+                        setPaymentToastOpen(true);
                     });
-                    return;
-                }
+                },
+                prefill: {
+                    name: token.name ?? token.username,
+                    email: token.email ?? "",
+                    contact: token.phone ?? "",
+                },
+                notes: {
+                    username: token.username,
+                    plan,
+                },
+                theme: {
+                    color: "#1d9bf0",
+                },
+            };
 
-                const Razorpay = window.Razorpay;
-                if (!Razorpay) {
-                    throw new Error("Razorpay checkout is unavailable.");
-                }
-                const razorpay = new Razorpay(options);
-                razorpay.open();
+            setSelectedPlan(plan);
+
+            if (isDevMock) {
+                console.log("[Dev Mode] Auto-activating mock subscription order:", response.order.id);
+                options.handler({
+                    razorpay_payment_id: `pay_dev_${Date.now()}`,
+                    razorpay_order_id: response.order.id,
+                    razorpay_signature: "sig_dev_mock",
+                });
+                return;
+            }
+
+            const Razorpay = window.Razorpay;
+            if (!Razorpay) {
+                throw new Error("Razorpay checkout is unavailable.");
+            }
+            const razorpay = new Razorpay(options);
+            razorpay.open();
         } catch (error) {
             setSelectedPlan(plan);
             setActivatedSubscription(null);
@@ -330,42 +374,55 @@ export default function SettingsPage() {
         }
     };
 
-    // ---- UI-only helpers (no logic/state impact beyond navigation) ----
-
     const currentPlanName =
         subscriptionPlans.find((p) => p.key === token?.subscriptionPlan)?.name ?? t("settings.free");
 
-    type Row = { key: SettingsSection; title: string; subtitle: string; visible: boolean };
+    type Row = {
+        key: SettingsSection;
+        title: string;
+        subtitle: string;
+        icon: React.ComponentType<{ size?: number }>;
+        category: string;
+        visible: boolean;
+    };
 
     const rows: Row[] = [
         {
             key: "theme",
             title: t("settings.colorTheme"),
-            subtitle: theme === "dark" ? t("settings.lightsOut") : t("settings.defaultTheme"),
+            subtitle: "Manage theme, color accents, and display background intensity",
+            icon: FaPalette,
+            category: "Accessibility, display, and languages",
             visible: true,
         },
         {
             key: "language",
             title: t("settings.language"),
-                        subtitle: t("settings.languageDescription"),
-            visible: !!token,
+            subtitle: t("settings.languageDescription"),
+            icon: FaGlobe,
+            category: "Accessibility, display, and languages",
+            visible: true,
         },
         {
             key: "subscription",
             title: t("settings.premium"),
-            subtitle: `${t("settings.currentPlan")} ${currentPlanName}`,
+            subtitle: `Manage subscription perks · Current plan: ${currentPlanName}`,
+            icon: FaCrown,
+            category: "X Premium",
             visible: !!token,
         },
         {
             key: "loginHistory",
             title: t("settings.loginHistory"),
             subtitle: t("settings.loginHistorySubtitle"),
+            icon: FaShieldHalved,
+            category: "Security and account access",
             visible: !!token,
         },
     ];
 
     const filteredRows = rows.filter(
-        (row) => row.visible && row.title.toLowerCase().includes(searchQuery.trim().toLowerCase())
+        (row) => row.visible && (row.title.toLowerCase().includes(searchQuery.trim().toLowerCase()) || row.subtitle.toLowerCase().includes(searchQuery.trim().toLowerCase()))
     );
 
     const sectionTitles: Record<SettingsSection, string> = {
@@ -375,63 +432,177 @@ export default function SettingsPage() {
         loginHistory: t("settings.loginHistory"),
     };
 
-    const renderRow = (row: Row) => (
-        <ListItemButton
-            key={row.key}
-            selected={activeSection === row.key}
-            onClick={() => setActiveSection(row.key)}
-            sx={{
-                px: 2,
-                py: 1.5,
-                borderRadius: 0,
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                gap: 1.5,
-                "&.Mui-selected": {
-                    backgroundColor: (muiTheme: Theme) => (muiTheme.palette.mode === "dark" ? "rgba(231,233,234,0.1)" : "rgba(15,20,25,0.06)"),
-                },
-                "&.Mui-selected:hover": {
-                    backgroundColor: (muiTheme: Theme) => (muiTheme.palette.mode === "dark" ? "rgba(231,233,234,0.1)" : "rgba(15,20,25,0.06)"),
-                },
-                "&:hover": {
-                    backgroundColor: (muiTheme: Theme) => (muiTheme.palette.mode === "dark" ? "rgba(231,233,234,0.1)" : "rgba(15,20,25,0.06)"),
-                },
-                transition: "background-color 0.15s ease-in-out",
-            }}
-        >
-            <ListItemText
-                primary={row.title}
-                secondary={row.subtitle}
-                slotProps={{
-                    primary: { style: { fontWeight: 700, fontSize: "0.98rem" } },
-                    secondary: { style: { fontSize: "0.85rem" } },
+    const renderRow = (row: Row) => {
+        const Icon = row.icon;
+        const isSelected = activeSection === row.key;
+        return (
+            <ListItemButton
+                key={row.key}
+                selected={isSelected}
+                onClick={() => setActiveSection(row.key)}
+                sx={{
+                    px: 2.5,
+                    py: 1.75,
+                    borderRadius: 0,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    gap: 2,
+                    borderRight: isSelected ? "3px solid #1d9bf0" : "3px solid transparent",
+                    backgroundColor: isSelected ? "var(--hover)" : "transparent",
+                    "&:hover": {
+                        backgroundColor: "var(--hover)",
+                    },
+                    transition: "background-color 0.15s ease-in-out",
                 }}
-            />
-            <FaChevronRight style={{ flexShrink: 0, opacity: 0.6, fontSize: "0.85rem" }} />
-        </ListItemButton>
-    );
+            >
+                <Box sx={{ display: "flex", alignItems: "flex-start", gap: 2, minWidth: 0 }}>
+                    <Box sx={{ pt: 0.25, color: isSelected ? "#1d9bf0" : "var(--twitter-muted)", flexShrink: 0 }}>
+                        <Icon size={18} />
+                    </Box>
+                    <ListItemText
+                        primary={row.title}
+                        secondary={row.subtitle}
+                        slotProps={{
+                            primary: { style: { fontWeight: isSelected ? 800 : 700, fontSize: "0.95rem", color: "var(--twitter-black)" } },
+                            secondary: { style: { fontSize: "0.82rem", color: "var(--twitter-muted)", marginTop: "2px" } },
+                        }}
+                    />
+                </Box>
+                <FaChevronRight style={{ flexShrink: 0, color: "var(--twitter-muted)", fontSize: "0.8rem" }} />
+            </ListItemButton>
+        );
+    };
 
     const renderThemePanel = () => (
-        <Stack spacing={2} sx={{ px: { xs: 2, md: 3 }, py: 3 }}>
-            <Typography variant="body2" color="text.secondary">
-                {t("settings.themeDescription")}
-            </Typography>
+        <Stack spacing={3} sx={{ px: { xs: 2, md: 3 }, py: 3 }}>
+            <Box>
+                <Typography sx={{ fontSize: "1.25rem", fontWeight: 800, color: "var(--twitter-black)", mb: 0.5 }}>
+                    Display & Appearance
+                </Typography>
+                <Typography sx={{ fontSize: "0.875rem", color: "var(--twitter-muted)" }}>
+                    {t("settings.themeDescription")}
+                </Typography>
+            </Box>
+
+            {/* Background Theme Mode Selection */}
+            <Box>
+                <Typography sx={{ fontSize: "0.875rem", fontWeight: 800, color: "var(--twitter-black)", mb: 1.5 }}>
+                    Background Mode
+                </Typography>
+                <Grid container spacing={1.5}>
+                    <Grid size={{ xs: 6, sm: 6 }}>
+                        <Box
+                            onClick={() => theme === "dark" && toggleTheme()}
+                            sx={{
+                                border: theme === "light" ? "2px solid #1d9bf0" : "1px solid var(--border-color)",
+                                borderRadius: "16px",
+                                p: 2,
+                                cursor: "pointer",
+                                backgroundColor: "#ffffff",
+                                color: "#0f1419",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                transition: "all 0.15s ease",
+                                "&:hover": { borderColor: "#1d9bf0" },
+                            }}
+                        >
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                                <Box sx={{ width: 18, height: 18, borderRadius: 999, border: theme === "light" ? "6px solid #1d9bf0" : "2px solid #71767b" }} />
+                                <Typography sx={{ fontWeight: 700, fontSize: "0.9rem" }}>Default Light</Typography>
+                            </Box>
+                        </Box>
+                    </Grid>
+                    <Grid size={{ xs: 6, sm: 6 }}>
+                        <Box
+                            onClick={() => theme === "light" && toggleTheme()}
+                            sx={{
+                                border: theme === "dark" ? "2px solid #1d9bf0" : "1px solid var(--border-color)",
+                                borderRadius: "16px",
+                                p: 2,
+                                cursor: "pointer",
+                                backgroundColor: "#000000",
+                                color: "#e7e9ea",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                transition: "all 0.15s ease",
+                                "&:hover": { borderColor: "#1d9bf0" },
+                            }}
+                        >
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                                <Box sx={{ width: 18, height: 18, borderRadius: 999, border: theme === "dark" ? "6px solid #1d9bf0" : "2px solid #71767b" }} />
+                                <Typography sx={{ fontWeight: 700, fontSize: "0.9rem" }}>Lights out (Dark)</Typography>
+                            </Box>
+                        </Box>
+                    </Grid>
+                </Grid>
+            </Box>
+
+            {/* Accent Color Selection */}
+            <Box>
+                <Typography sx={{ fontSize: "0.875rem", fontWeight: 800, color: "var(--twitter-black)", mb: 1.5 }}>
+                    Color Accent
+                </Typography>
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-around",
+                        border: "1px solid var(--border-color)",
+                        borderRadius: "16px",
+                        p: 2,
+                        backgroundColor: "var(--hover)",
+                    }}
+                >
+                    {[
+                        { color: "#1d9bf0", name: "Blue" },
+                        { color: "#ffd400", name: "Yellow" },
+                        { color: "#f91880", name: "Pink" },
+                        { color: "#7856ff", name: "Purple" },
+                        { color: "#ff7a00", name: "Orange" },
+                        { color: "#00ba7c", name: "Green" },
+                    ].map((item) => (
+                        <Box
+                            key={item.color}
+                            onClick={() => setAccentColor(item.color)}
+                            sx={{
+                                width: 36,
+                                height: 36,
+                                borderRadius: 999,
+                                backgroundColor: item.color,
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                color: "#fff",
+                                transform: accentColor === item.color ? "scale(1.15)" : "scale(1)",
+                                boxShadow: accentColor === item.color ? `0 0 12px ${item.color}` : "none",
+                                transition: "transform 0.15s ease",
+                            }}
+                        >
+                            {accentColor === item.color && <FaCheck size={14} />}
+                        </Box>
+                    ))}
+                </Box>
+            </Box>
+
+            {/* Dark Mode Switch Row */}
             <Stack
                 direction="row"
                 sx={{
                     alignItems: "center",
                     justifyContent: "space-between",
-                    border: "1px solid",
-                    borderColor: "divider",
-                    borderRadius: 3,
+                    border: "1px solid var(--border-color)",
+                    borderRadius: "16px",
                     px: 2.5,
                     py: 2,
                 }}
             >
                 <Stack>
-                    <Typography sx={{ fontWeight: 700 }}>{t("settings.darkMode")}</Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography sx={{ fontWeight: 700, color: "var(--twitter-black)" }}>{t("settings.darkMode")}</Typography>
+                    <Typography variant="body2" sx={{ color: "var(--twitter-muted)" }}>
                         {theme === "dark" ? t("settings.lightsOut") : t("settings.defaultTheme")}
                     </Typography>
                 </Stack>
@@ -439,13 +610,13 @@ export default function SettingsPage() {
                     checked={theme === "dark"}
                     onChange={toggleTheme}
                     sx={{
-                        width: 58,
-                        height: 34,
+                        width: 54,
+                        height: 32,
                         p: 0,
                         "& .MuiSwitch-switchBase": {
-                            p: "6px",
+                            p: "5px",
                             "&.Mui-checked": {
-                                transform: "translateX(24px)",
+                                transform: "translateX(22px)",
                                 color: "#fff",
                                 "& + .MuiSwitch-track": {
                                     backgroundColor: "#1d9bf0",
@@ -459,7 +630,7 @@ export default function SettingsPage() {
                             boxShadow: "none",
                         },
                         "& .MuiSwitch-track": {
-                            borderRadius: 17,
+                            borderRadius: 16,
                             backgroundColor: "#71767b",
                             opacity: 1,
                             transition: "background-color 0.2s ease-in-out",
@@ -471,15 +642,20 @@ export default function SettingsPage() {
     );
 
     const renderLanguagePanel = () => (
-        <Stack spacing={2} sx={{ px: { xs: 2, md: 3 }, py: 3 }}>
-                <Typography variant="body2" color="text.secondary">
-                {t("settings.languageDescription")}
-            </Typography>
-            <Stack
+        <Stack spacing={3} sx={{ px: { xs: 2, md: 3 }, py: 3 }}>
+            <Box>
+                <Typography sx={{ fontSize: "1.25rem", fontWeight: 800, color: "var(--twitter-black)", mb: 0.5 }}>
+                    {t("settings.language")}
+                </Typography>
+                <Typography sx={{ fontSize: "0.875rem", color: "var(--twitter-muted)" }}>
+                    {t("settings.languageDescription")}
+                </Typography>
+            </Box>
+
+            <Box
                 sx={{
-                    border: "1px solid",
-                    borderColor: "divider",
-                    borderRadius: 3,
+                    border: "1px solid var(--border-color)",
+                    borderRadius: "16px",
                     px: 2.5,
                     py: 2.5,
                 }}
@@ -487,152 +663,102 @@ export default function SettingsPage() {
                 {token && (
                     <LanguageSelector currentLanguage={token.preferredLanguage ?? "en"} refreshToken={refreshToken} />
                 )}
-            </Stack>
+            </Box>
         </Stack>
     );
 
     const renderSubscriptionPanel = () => (
-        <Stack spacing={2.5} sx={{ px: { xs: 2, md: 3 }, py: 3 }}>
-            <Typography variant="body2" color="text.secondary">
-                {t("settings.subscriptionCardDescription")}
-            </Typography>
+        <Stack spacing={3} sx={{ px: { xs: 2, md: 3 }, py: 3 }}>
+            <Box>
+                <Typography sx={{ fontSize: "1.25rem", fontWeight: 800, color: "var(--twitter-black)", mb: 0.5 }}>
+                    X Premium Tiers
+                </Typography>
+                <Typography sx={{ fontSize: "0.875rem", color: "var(--twitter-muted)" }}>
+                    {t("settings.subscriptionCardDescription")}
+                </Typography>
+            </Box>
+
             <Grid container spacing={2}>
                 {subscriptionPlans.map((plan) => {
                     const isCurrentPlan = token?.subscriptionPlan === plan.key;
-                    const planStyles = {
-                        FREE: {
-                            accent: "#1d9bf0",
-                            border: "1px solid rgba(29,155,240,0.45)",
-                            background: "linear-gradient(135deg, rgba(29,155,240,0.10), rgba(255,255,255,0.96))",
-                            glow: "0 10px 30px rgba(29,155,240,0.16)",
-                            title: "#1d9bf0",
-                            description: "rgba(20,20,20,0.75)",
-                            button: {
-                                background: "linear-gradient(135deg, #1d9bf0 0%, #4ba3ff 100%)",
-                                hover: "linear-gradient(135deg, #1a8cd8 0%, #3b95ea 100%)",
-                                color: "#fff",
-                            },
-                        },
-                        BRONZE: {
-                            accent: "#a45f1d",
-                            border: "1px solid rgba(164,95,29,0.45)",
-                            background: "linear-gradient(135deg, rgba(255,232,206,0.95), rgba(255,248,239,0.96))",
-                            glow: "0 12px 34px rgba(164,95,29,0.16)",
-                            title: "#8c4512",
-                            description: "rgba(60,35,15,0.75)",
-                            button: {
-                                background: "linear-gradient(135deg, #a45f1d 0%, #c27a35 100%)",
-                                hover: "linear-gradient(135deg, #8f4d18 0%, #ad6b2b 100%)",
-                                color: "#fff",
-                            },
-                        },
-                        SILVER: {
-                            accent: "#8d98a2",
-                            border: "1px solid rgba(255,255,255,0.9)",
-                            background: "linear-gradient(135deg, rgba(255,255,255,0.98), rgba(232,236,240,0.92))",
-                            glow: "0 16px 42px rgba(141,152,162,0.24)",
-                            title: "#5f6870",
-                            description: "rgba(55,55,55,0.75)",
-                            button: {
-                                background: "linear-gradient(135deg, #ffffff 0%, #e8ebef 100%)",
-                                hover: "linear-gradient(135deg, #f5f7fa 0%, #dde3ea 100%)",
-                                color: "#0f1419",
-                            },
-                        },
-                        GOLD: {
-                            accent: "#caa24f",
-                            border: "1px solid rgba(202,162,79,0.55)",
-                            background: "linear-gradient(135deg, rgba(255,248,214,0.96), rgba(255,236,172,0.92))",
-                            glow: "0 16px 42px rgba(202,162,79,0.24)",
-                            title: "#a47b1d",
-                            description: "rgba(90,70,0,0.8)",
-                            button: {
-                                background: "linear-gradient(135deg, #d8b14a 0%, #f1c75d 100%)",
-                                hover: "linear-gradient(135deg, #c59c2c 0%, #dfb12d 100%)",
-                                color: "#221404",
-                            },
-                        },
-                    }[plan.key];
+                    const isGold = plan.key === "GOLD";
+                    const isSilver = plan.key === "SILVER";
+                    const isBronze = plan.key === "BRONZE";
+
                     return (
                         <Grid size={{ xs: 12, sm: 6 }} key={plan.key}>
                             <Card
                                 variant="outlined"
                                 sx={{
                                     height: "100%",
-                                    borderRadius: 3.5,
-                                    border: planStyles.border,
-                                    boxShadow: isCurrentPlan ? planStyles.glow : "0 6px 18px rgba(15,20,25,0.06)",
-                                    background: planStyles.background,
+                                    borderRadius: "20px",
+                                    border: isCurrentPlan
+                                        ? "2px solid #1d9bf0"
+                                        : isGold
+                                        ? "1px solid rgba(255, 215, 0, 0.4)"
+                                        : "1px solid var(--border-color)",
+                                    boxShadow: isGold
+                                        ? "0 8px 30px rgba(255, 215, 0, 0.1)"
+                                        : isCurrentPlan
+                                        ? "0 8px 30px rgba(29, 155, 240, 0.12)"
+                                        : "none",
+                                    backgroundColor: "var(--background-primary)",
                                     position: "relative",
                                     overflow: "hidden",
-                                    transition: "transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease",
-                                    transform: "translateY(0)",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    justifyContent: "space-between",
+                                    transition: "transform 150ms ease, box-shadow 150ms ease",
                                     "&:hover": {
-                                        transform: "translateY(-4px)",
-                                        boxShadow: planStyles.glow,
-                                    },
-                                    "&::before": {
-                                        content: '""',
-                                        position: "absolute",
-                                        inset: 0,
-                                        background: plan.key === "SILVER"
-                                            ? "linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.6) 40%, transparent 75%)"
-                                            : "linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.38) 40%, transparent 75%)",
-                                        pointerEvents: "none",
-                                        transform: "translateX(-100%)",
-                                        transition: "transform 220ms ease",
-                                    },
-                                    "&:hover::before": {
-                                        transform: "translateX(100%)",
+                                        transform: "translateY(-3px)",
                                     },
                                 }}
                             >
-                                <CardContent sx={{ position: "relative", zIndex: 1 }}>
-                                    <Stack direction="row" spacing={1} sx={{ justifyContent: "space-between", alignItems: "center" }}>
+                                <CardContent sx={{ p: 2.5 }}>
+                                    <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mb: 1 }}>
                                         <Typography
-                                            variant="h6"
-                                            component="h2"
-                                            sx={{ fontWeight: 800, color: planStyles.title }}
+                                            sx={{
+                                                fontSize: "1.1rem",
+                                                fontWeight: 800,
+                                                color: isGold ? "#ffd400" : isSilver ? "#1d9bf0" : "var(--twitter-black)",
+                                            }}
                                         >
                                             {plan.name}
                                         </Typography>
                                         {isCurrentPlan && (
                                             <Chip
                                                 size="small"
-                                                label="Current"
+                                                label="Active Plan"
                                                 sx={{
-                                                    background: plan.key === "SILVER"
-                                                        ? "linear-gradient(135deg, #f5f7fa 0%, #dae1e8 100%)"
-                                                        : plan.key === "GOLD"
-                                                          ? "linear-gradient(135deg, #d8b14a 0%, #f1c75d 100%)"
-                                                          : plan.key === "BRONZE"
-                                                            ? "linear-gradient(135deg, #a45f1d 0%, #c27a35 100%)"
-                                                            : "linear-gradient(135deg, #1d9bf0 0%, #4ba3ff 100%)",
-                                                    color: plan.key === "SILVER" ? "#0f1419" : "#fff",
+                                                    backgroundColor: "#1d9bf0",
+                                                    color: "#fff",
                                                     fontWeight: 700,
                                                     borderRadius: 999,
-                                                    boxShadow: plan.key === "SILVER" ? "0 6px 18px rgba(141,152,162,0.16)" : "none",
+                                                    fontSize: "0.72rem",
+                                                    height: 22,
                                                 }}
                                             />
                                         )}
                                     </Stack>
-                                    <Typography variant="h5" sx={{ mt: 1, fontWeight: 800, color: "#0f1419" }}>
+
+                                    <Typography sx={{ fontSize: "1.5rem", fontWeight: 900, color: "var(--twitter-black)", mb: 0.5 }}>
                                         {plan.price}
                                     </Typography>
-                                    <Typography
-                                        variant="body2"
-                                        sx={{
-                                            mt: 0.5,
-                                            fontSize: "0.95rem",
-                                            fontWeight: 600,
-                                            color: planStyles.description,
-                                            lineHeight: 1.4,
-                                        }}
-                                    >
+                                    <Typography sx={{ fontSize: "0.85rem", color: "var(--twitter-muted)", mb: 2 }}>
                                         {plan.tweets}
                                     </Typography>
+
+                                    <Stack spacing={1} sx={{ borderTop: "1px solid var(--border-color)", pt: 1.5 }}>
+                                        {plan.features.map((feat) => (
+                                            <Box key={feat} sx={{ display: "flex", alignItems: "center", gap: 1, fontSize: "0.82rem" }}>
+                                                <FaCheck size={12} color="#1d9bf0" style={{ flexShrink: 0 }} />
+                                                <Typography sx={{ fontSize: "0.82rem", color: "var(--twitter-black)" }}>{feat}</Typography>
+                                            </Box>
+                                        ))}
+                                    </Stack>
                                 </CardContent>
-                                <CardActions sx={{ px: 2, pb: 2, position: "relative", zIndex: 1 }}>
+
+                                <CardActions sx={{ p: 2.5, pt: 0 }}>
                                     <Button
                                         variant={isCurrentPlan ? "outlined" : "contained"}
                                         fullWidth
@@ -640,21 +766,27 @@ export default function SettingsPage() {
                                         disabled={isCheckoutLoading && selectedPlan === plan.key}
                                         sx={{
                                             borderRadius: 999,
-                                            fontWeight: 700,
+                                            fontWeight: 800,
+                                            fontSize: "0.9rem",
                                             textTransform: "none",
-                                            borderColor: planStyles.accent,
-                                            color: isCurrentPlan ? planStyles.title : planStyles.button.color,
-                                            background: isCurrentPlan ? "rgba(255,255,255,0.9)" : planStyles.button.background,
-                                            boxShadow: isCurrentPlan ? "none" : `0 8px 22px ${planStyles.accent}22`,
-                                            transition: "transform 200ms ease, box-shadow 200ms ease, background 200ms ease",
+                                            py: 1,
+                                            backgroundColor: isCurrentPlan
+                                                ? "transparent"
+                                                : isGold
+                                                ? "linear-gradient(135deg, #ffd400 0%, #f1c75d 100%)"
+                                                : "#1d9bf0",
+                                            color: isCurrentPlan ? "var(--twitter-black)" : isGold ? "#000" : "#fff",
+                                            borderColor: isCurrentPlan ? "var(--border-color)" : "transparent",
                                             "&:hover": {
-                                                background: isCurrentPlan ? "rgba(255,255,255,0.95)" : planStyles.button.hover,
-                                                transform: "translateY(-2px)",
-                                                boxShadow: isCurrentPlan ? "0 8px 18px rgba(15,20,25,0.08)" : `0 10px 24px ${planStyles.accent}33`,
+                                                backgroundColor: isCurrentPlan
+                                                    ? "var(--hover)"
+                                                    : isGold
+                                                    ? "#e6be00"
+                                                    : "#1a8cd8",
                                             },
                                         }}
                                     >
-                                        {t("settings.choosePlan")}
+                                        {isCurrentPlan ? "Current Plan" : t("settings.choosePlan")}
                                     </Button>
                                 </CardActions>
                             </Card>
@@ -662,8 +794,9 @@ export default function SettingsPage() {
                     );
                 })}
             </Grid>
+
             {paymentMessage && (
-                <Typography variant="body2" sx={{ color: "text.secondary", fontWeight: 500 }}>
+                <Typography variant="body2" sx={{ color: "var(--twitter-muted)", fontWeight: 500 }}>
                     {paymentMessage}
                 </Typography>
             )}
@@ -675,18 +808,18 @@ export default function SettingsPage() {
         const otherSessions = loginHistory.slice(1);
 
         return (
-            <Stack sx={{ px: { xs: 0, md: 0 }, py: 0, bgcolor: "#000", color: "#fff", minHeight: "100%" }}>
-                <Box sx={{ px: 2, pt: 2.5, pb: 1.5, borderBottom: "1px solid #2f3336" }}>
-                    <Typography sx={{ fontSize: "1.25rem", fontWeight: 800, color: "#e7e9ea", lineHeight: 1.2 }}>
+            <Stack spacing={3} sx={{ px: { xs: 2, md: 3 }, py: 3 }}>
+                <Box>
+                    <Typography sx={{ fontSize: "1.25rem", fontWeight: 800, color: "var(--twitter-black)", mb: 0.5 }}>
                         {t("settings.loginActivity")}
                     </Typography>
-                    <Typography sx={{ mt: 0.75, fontSize: "0.8125rem", color: "#71767b", lineHeight: 1.5 }}>
+                    <Typography sx={{ fontSize: "0.875rem", color: "var(--twitter-muted)" }}>
                         {t("settings.loginActivityDescription")}
                     </Typography>
                 </Box>
 
                 {isLoading ? (
-                    <Box sx={{ px: 2, py: 3 }}>
+                    <Box sx={{ py: 6, display: "grid", placeItems: "center" }}>
                         <CircularLoading />
                     </Box>
                 ) : loginHistory.length === 0 ? (
@@ -694,26 +827,24 @@ export default function SettingsPage() {
                         No login history available.
                     </Typography>
                 ) : (
-                    <>
+                    <Stack spacing={3}>
                         {currentSession && (
-                            <Box sx={{ px: 2, pt: 2.5 }}>
-                                <Typography sx={{ mb: 1.25, fontSize: "0.8125rem", fontWeight: 700, color: "#71767b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                            <Box>
+                                <Typography sx={{ mb: 1, fontSize: "0.8125rem", fontWeight: 800, color: "var(--twitter-muted)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
                                     {t("settings.currentSession")}
                                 </Typography>
-                                <Box sx={{ border: "1px solid #2f3336", borderRadius: "16px", overflow: "hidden" }}>
+                                <Box sx={{ border: "1px solid var(--border-color)", borderRadius: "16px", overflow: "hidden" }}>
                                     <LoginHistorySessionRow entry={currentSession} isCurrent />
                                 </Box>
                             </Box>
                         )}
 
                         {otherSessions.length > 0 && (
-                            <Box sx={{ px: 2, pt: 2.5 }}>
-                                <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 1.25 }}>
-                                    <Typography sx={{ fontSize: "0.8125rem", fontWeight: 700, color: "#71767b", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                                        {t("settings.otherSessions")}
-                                    </Typography>
-                                </Stack>
-                                <Box sx={{ border: "1px solid #2f3336", borderRadius: "16px", overflow: "hidden" }}>
+                            <Box>
+                                <Typography sx={{ mb: 1, fontSize: "0.8125rem", fontWeight: 800, color: "var(--twitter-muted)", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                                    {t("settings.otherSessions")} ({otherSessions.length})
+                                </Typography>
+                                <Box sx={{ border: "1px solid var(--border-color)", borderRadius: "16px", overflow: "hidden" }}>
                                     {otherSessions.map((entry, index) => (
                                         <LoginHistorySessionRow key={`${entry.loginTime}-${index + 1}`} entry={entry} isCurrent={false} />
                                     ))}
@@ -721,12 +852,10 @@ export default function SettingsPage() {
                             </Box>
                         )}
 
-                        <Box sx={{ px: 2, pt: 2.5, pb: 3 }}>
-                            <Typography sx={{ display: "flex", alignItems: "center", gap: 1, fontSize: "0.8125rem", color: "#71767b" }}>
-                                Sessions auto-expire after 30 days of inactivity.
-                            </Typography>
-                        </Box>
-                    </>
+                        <Typography sx={{ fontSize: "0.8125rem", color: "var(--twitter-muted)" }}>
+                            Sessions automatically expire after 30 days of inactivity.
+                        </Typography>
+                    </Stack>
                 )}
             </Stack>
         );
@@ -744,7 +873,7 @@ export default function SettingsPage() {
                 return renderLoginHistoryPanel();
             default:
                 return (
-                    <Stack sx={{ alignItems: "center", justifyContent: "center", height: "100%", px: 3, py: 8 }}>
+                    <Stack sx={{ alignItems: "center", justifyContent: "center", height: "100%", px: 3, py: 12 }}>
                         <Typography color="text.secondary" sx={{ textAlign: "center" }}>
                             {t("settings.selectSettingHint")}
                         </Typography>
@@ -754,80 +883,65 @@ export default function SettingsPage() {
     };
 
     return (
-        <main className="x-settings-shell">
-            {/*
-              Layout-only fix: the app's outer .layout grid caps the middle
-              column at minmax(500px,600px), which squeezed this page's own
-              menu+detail split into a tiny inner area (looked like a popup).
-              This widens ONLY the middle track, ONLY while this page is
-              mounted, so the left nav (280px) and right Trends/News sidebar
-              (290-350px) stay exactly the widths they already are.
-            */}
+        <main className="x-settings-shell" style={{ minHeight: "100vh", backgroundColor: "var(--background-primary)" }}>
             <style>{`
                 .layout:has(.x-settings-shell) {
                     grid-template-columns: 280px minmax(500px, 1fr) minmax(290px, 350px);
                 }
             `}</style>
-            <Stack
-                direction="row"
-                sx={{
-                    height: "100%",
-                    minHeight: "100vh",
-                    width: "100%",
-                }}
-            >
-                {/* LEFT PANEL */}
+
+            <Stack direction="row" sx={{ minHeight: "100vh", width: "100%" }}>
+                {/* LEFT NAVIGATION COLUMN */}
                 <Stack
                     sx={{
                         width: { xs: "100%", md: 360 },
                         flexShrink: 0,
-                        borderRight: { md: "1px solid" },
-                        borderColor: "divider",
+                        borderRight: "1px solid var(--border-color)",
                         display: { xs: activeSection ? "none" : "flex", md: "flex" },
                     }}
                 >
-                    <Typography
-                        component="h1"
-                        className="page-name"
-                        sx={{ fontWeight: 800, fontSize: "1.25rem" }}
-                    >
-                        {t("settings.title")}
-                    </Typography>
+                    <Box sx={{ p: 2, pb: 1, borderBottom: "1px solid var(--border-color)" }}>
+                        <Typography component="h1" sx={{ fontWeight: 800, fontSize: "1.25rem", color: "var(--twitter-black)", mb: 1.5 }}>
+                            {t("settings.title")}
+                        </Typography>
 
-                    <TextField
-                        placeholder={t("settings.searchSettings")}
-                        size="small"
-                        value={searchQuery}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-                        sx={{
-                            px: 2,
-                            pt: 1.5,
-                            pb: 1,
-                            "& .MuiOutlinedInput-root": {
-                                borderRadius: 999,
-                            },
-                        }}
-                        slotProps={{
-                            input: {
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <MdSearch style={{ opacity: 0.6, fontSize: "1.1rem" }} />
-                                    </InputAdornment>
-                                ),
-                            },
-                        }}
-                    />
+                        <TextField
+                            placeholder={t("settings.searchSettings")}
+                            size="small"
+                            fullWidth
+                            value={searchQuery}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+                            sx={{
+                                "& .MuiOutlinedInput-root": {
+                                    borderRadius: 999,
+                                    backgroundColor: "var(--hover)",
+                                    "& fieldset": { borderColor: "transparent" },
+                                    "&:hover fieldset": { borderColor: "transparent" },
+                                    "&.Mui-focused fieldset": { borderColor: "#1d9bf0" },
+                                },
+                            }}
+                            slotProps={{
+                                input: {
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <MdSearch style={{ color: "var(--twitter-muted)", fontSize: "1.2rem" }} />
+                                        </InputAdornment>
+                                    ),
+                                },
+                            }}
+                        />
+                    </Box>
 
                     <List sx={{ py: 0 }}>
-                        <ListSubheader sx={{ fontWeight: 700, lineHeight: 2.4, backgroundColor: "transparent" }}>
-                            {t("settings.accessibilityDisplayLanguages")}
+                        <ListSubheader sx={{ fontWeight: 800, fontSize: "0.8125rem", color: "var(--twitter-muted)", textTransform: "uppercase", letterSpacing: "0.04em", lineHeight: 2.5, backgroundColor: "transparent" }}>
+                            Accessibility, Display, and Languages
                         </ListSubheader>
                         {filteredRows.filter((r) => r.key === "theme" || r.key === "language").map(renderRow)}
 
                         {filteredRows.some((r) => r.key === "subscription") && (
                             <>
-                                <ListSubheader sx={{ fontWeight: 700, lineHeight: 2.4, backgroundColor: "transparent" }}>
-                                    {t("settings.premium")}
+                                <ListSubheader sx={{ fontWeight: 800, fontSize: "0.8125rem", color: "var(--twitter-muted)", textTransform: "uppercase", letterSpacing: "0.04em", lineHeight: 2.5, backgroundColor: "transparent", mt: 1 }}>
+                                    X Premium
                                 </ListSubheader>
                                 {filteredRows.filter((r) => r.key === "subscription").map(renderRow)}
                             </>
@@ -835,8 +949,8 @@ export default function SettingsPage() {
 
                         {filteredRows.some((r) => r.key === "loginHistory") && (
                             <>
-                                <ListSubheader sx={{ fontWeight: 700, lineHeight: 2.4, backgroundColor: "transparent" }}>
-                                    {t("settings.securityAccountAccess")}
+                                <ListSubheader sx={{ fontWeight: 800, fontSize: "0.8125rem", color: "var(--twitter-muted)", textTransform: "uppercase", letterSpacing: "0.04em", lineHeight: 2.5, backgroundColor: "transparent", mt: 1 }}>
+                                    Security & Account Access
                                 </ListSubheader>
                                 {filteredRows.filter((r) => r.key === "loginHistory").map(renderRow)}
                             </>
@@ -844,7 +958,7 @@ export default function SettingsPage() {
                     </List>
                 </Stack>
 
-                {/* RIGHT PANEL ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¾ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â fills all remaining space, no fixed/max width */}
+                {/* RIGHT DETAIL PANEL */}
                 <Stack
                     sx={{
                         flex: 1,
@@ -853,33 +967,32 @@ export default function SettingsPage() {
                         minWidth: 0,
                     }}
                 >
-                    <Stack
-                        direction="row"
-                        spacing={1}
-                        className="page-name"
-                        sx={{ alignItems: "center", display: { xs: "flex", md: activeSection ? "flex" : "none" } }}
+                    <Box
+                        sx={{
+                            px: 2,
+                            py: 1.5,
+                            borderBottom: "1px solid var(--border-color)",
+                            display: { xs: "flex", md: "none" },
+                            alignItems: "center",
+                            gap: 1.5,
+                        }}
                     >
                         <Button
                             onClick={() => setActiveSection(null)}
-                            sx={{
-                                display: { xs: "inline-flex", md: "none" },
-                                minWidth: 0,
-                                p: 1,
-                                borderRadius: 999,
-                                color: "inherit",
-                            }}
+                            sx={{ minWidth: 0, p: 1, borderRadius: 999, color: "var(--twitter-black)" }}
                         >
                             <FaArrowLeft />
                         </Button>
-                        <Typography sx={{ fontWeight: 800, fontSize: "1.1rem" }}>
+                        <Typography sx={{ fontWeight: 800, fontSize: "1.1rem", color: "var(--twitter-black)" }}>
                             {activeSection ? sectionTitles[activeSection] : ""}
                         </Typography>
-                    </Stack>
+                    </Box>
 
                     {renderActivePanel()}
                 </Stack>
             </Stack>
 
+            {/* ACTIVATION MODAL */}
             <Dialog
                 open={!!activatedSubscription}
                 onClose={() => setActivatedSubscription(null)}
@@ -890,164 +1003,78 @@ export default function SettingsPage() {
                         sx: {
                             borderRadius: "24px",
                             overflow: "hidden",
-                            color: "#f7f9f9",
-                            background: "linear-gradient(180deg, rgba(15,20,25,0.98), rgba(9,12,17,0.98))",
-                            border: "1px solid rgba(255,255,255,0.08)",
-                            boxShadow: "0 24px 70px rgba(0,0,0,0.55)",
-                            backdropFilter: "blur(24px)",
-                        },
-                    },
-                    backdrop: {
-                        sx: {
-                            backgroundColor: "rgba(3,8,20,0.65)",
-                            backdropFilter: "blur(10px)",
+                            color: "var(--twitter-black)",
+                            background: "var(--background-primary)",
+                            border: "1px solid var(--border-color)",
+                            boxShadow: "0 24px 70px rgba(0,0,0,0.4)",
                         },
                     },
                 }}
             >
-                <Box sx={{ px: { xs: 2, sm: 3 }, py: { xs: 2.5, sm: 3 } }}>
-                    <Stack spacing={2.25} sx={{ alignItems: "center", textAlign: "center" }}>
+                <Box sx={{ px: 3, py: 3.5 }}>
+                    <Stack spacing={2.5} sx={{ alignItems: "center", textAlign: "center" }}>
                         <Box
                             sx={{
-                                width: 68,
-                                height: 68,
+                                width: 64,
+                                height: 64,
                                 borderRadius: "999px",
                                 display: "grid",
                                 placeItems: "center",
-                                background: "linear-gradient(180deg, #22c55e 0%, #159a46 100%)",
-                                boxShadow: "0 12px 30px rgba(34,197,94,0.28)",
-                                flexShrink: 0,
+                                background: "#00ba7c",
+                                boxShadow: "0 10px 25px rgba(0, 186, 124, 0.3)",
                             }}
-                            aria-hidden="true"
                         >
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                                <path
-                                    d="M12 2.75C6.891 2.75 2.75 6.891 2.75 12C2.75 17.109 6.891 21.25 12 21.25C17.109 21.25 21.25 17.109 21.25 12C21.25 6.891 17.109 2.75 12 2.75ZM16.03 9.72L11.25 14.5C11.03 14.72 10.67 14.72 10.45 14.5L7.97 12.02C7.75 11.8 7.75 11.44 7.97 11.22C8.19 11 8.55 11 8.77 11.22L10.85 13.3L15.23 8.92C15.45 8.7 15.81 8.7 16.03 8.92C16.25 9.14 16.25 9.5 16.03 9.72Z"
-                                    fill="#ffffff"
-                                />
-                            </svg>
+                            <FaCheck size={28} color="#fff" />
                         </Box>
 
-                        <Stack spacing={0.75} sx={{ width: "100%" }}>
-                            <Typography
-                                variant="h5"
-                                component="h2"
-                                sx={{
-                                    fontWeight: 900,
-                                    letterSpacing: "-0.03em",
-                                    lineHeight: 1.05,
-                                }}
-                            >
+                        <Stack spacing={0.5}>
+                            <Typography variant="h5" sx={{ fontWeight: 900, color: "var(--twitter-black)" }}>
                                 Subscription Activated!
                             </Typography>
-                            <Typography
-                                variant="body1"
-                                sx={{
-                                    color: "rgba(255,255,255,0.74)",
-                                    fontWeight: 500,
-                                }}
-                            >
-                                Your Premium subscription is now active.
+                            <Typography variant="body2" sx={{ color: "var(--twitter-muted)" }}>
+                                Your X Premium subscription is now live.
                             </Typography>
                         </Stack>
 
-                        <Stack
-                            spacing={1.25}
-                            sx={{
-                                width: "100%",
-                                borderRadius: "22px",
-                                p: 2,
-                                background: "rgba(255,255,255,0.04)",
-                                border: "1px solid rgba(255,255,255,0.08)",
-                                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04)",
-                            }}
-                        >
-                            <Stack spacing={0.35}>
-                                <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.56)", letterSpacing: "0.08em" }}>
-                                    PREMIUM PLAN
-                                </Typography>
-                                <Typography variant="h6" sx={{ fontWeight: 800, lineHeight: 1.2, wordBreak: "break-word" }}>
-                                    {activatedSubscription?.plan}
-                                </Typography>
-                            </Stack>
-                            <Box sx={{ height: 1, backgroundColor: "rgba(255,255,255,0.08)" }} />
-                            <Stack spacing={0.35}>
-                                <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.56)", letterSpacing: "0.08em" }}>
-                                    EMAIL
-                                </Typography>
-                                <Typography
-                                    variant="body1"
-                                    sx={{
-                                        fontWeight: 600,
-                                        color: "#e7e9ea",
-                                        wordBreak: "break-word",
-                                    }}
-                                >
-                                    {activatedSubscription?.email || token?.email || ""}
-                                </Typography>
-                            </Stack>
+                        <Stack spacing={1} sx={{ width: "100%", borderRadius: "16px", p: 2, backgroundColor: "var(--hover)" }}>
+                            <Typography variant="caption" sx={{ color: "var(--twitter-muted)", fontWeight: 700 }}>
+                                PREMIUM PLAN
+                            </Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 800, color: "#1d9bf0" }}>
+                                {activatedSubscription?.plan}
+                            </Typography>
                         </Stack>
 
-                        <Stack direction="row" spacing={1.25} sx={{ width: "100%" }}>
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                onClick={() => setActivatedSubscription(null)}
-                                sx={{
-                                    minHeight: 48,
-                                    borderRadius: "999px",
-                                    fontWeight: 800,
-                                    textTransform: "none",
-                                    background: "#1d9bf0",
-                                    boxShadow: "0 14px 30px rgba(29,155,240,0.26)",
-                                    "&:hover": {
-                                        background: "#1a8cd8",
-                                    },
-                                }}
-                            >
-                                Continue
-                            </Button>
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                onClick={() => setActivatedSubscription(null)}
-                                sx={{
-                                    minHeight: 48,
-                                    borderRadius: "999px",
-                                    fontWeight: 800,
-                                    textTransform: "none",
-                                    backgroundColor: "rgba(255,255,255,0.06)",
-                                    color: "#f7f9f9",
-                                    border: "1px solid rgba(255,255,255,0.12)",
-                                    boxShadow: "none",
-                                    "&:hover": {
-                                        backgroundColor: "rgba(255,255,255,0.1)",
-                                    },
-                                }}
-                            >
-                                Close
-                            </Button>
-                        </Stack>
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            onClick={() => setActivatedSubscription(null)}
+                            sx={{
+                                borderRadius: 999,
+                                fontWeight: 800,
+                                py: 1.25,
+                                textTransform: "none",
+                                backgroundColor: "#1d9bf0",
+                                "&:hover": { backgroundColor: "#1a8cd8" },
+                            }}
+                        >
+                            Done
+                        </Button>
                     </Stack>
                 </Box>
-            </Dialog>            <Snackbar
+            </Dialog>
+
+            <Snackbar
                 open={paymentToastOpen && Boolean(paymentMessage)}
-                autoHideDuration={4200}
+                autoHideDuration={4000}
                 onClose={() => setPaymentToastOpen(false)}
                 anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-                slotProps={{
-                    transition: { appear: true },
-                }}
             >
                 <Alert
                     onClose={() => setPaymentToastOpen(false)}
-                    severity="error"
+                    severity="info"
                     variant="filled"
-                    sx={{
-                        borderRadius: "18px",
-                        alignItems: "center",
-                        boxShadow: "0 18px 50px rgba(0,0,0,0.28)",
-                    }}
+                    sx={{ borderRadius: 999, alignItems: "center", backgroundColor: "#1d9bf0" }}
                 >
                     {paymentMessage}
                 </Alert>
@@ -1055,6 +1082,3 @@ export default function SettingsPage() {
         </main>
     );
 }
-
-
-

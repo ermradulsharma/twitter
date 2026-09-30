@@ -16,10 +16,10 @@ const queryClient = new QueryClient({
     },
 });
 
-export const ThemeContext = createContext({ theme: "light", toggleTheme: () => {} });
+export const ThemeContext = createContext({ theme: "dark", toggleTheme: () => {} });
 
 export default function Providers({ children }: { children: React.ReactNode }) {
-    const [theme, setTheme] = useState("loading");
+    const [theme, setTheme] = useState("dark");
 
     const toggleTheme = () => {
         const newTheme = theme === "light" ? "dark" : "light";
@@ -28,20 +28,13 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     };
 
     useEffect(() => {
-        const storedTheme = localStorage.getItem("theme");
-        if (storedTheme) {
-            setTheme(storedTheme);
-        } else {
-            setTheme("light");
-        }
+        setTheme("dark");
+        localStorage.setItem("theme", "dark");
+        document.documentElement.setAttribute("data-theme", "dark");
     }, []);
 
     useEffect(() => {
-        if (theme === "dark") {
-            document.documentElement.setAttribute("data-theme", "dark");
-        } else {
-            document.documentElement.setAttribute("data-theme", "light");
-        }
+        document.documentElement.setAttribute("data-theme", theme);
     }, [theme]);
 
     const muiTheme = useMemo(

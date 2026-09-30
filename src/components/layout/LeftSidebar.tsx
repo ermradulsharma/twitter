@@ -5,13 +5,21 @@ import { useContext, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Avatar, Menu, MenuItem } from "@mui/material";
 import {
-    RiTwitterXFill,
     RiHome5Line,
+    RiHome5Fill,
     RiHashtag,
     RiNotification3Line,
+    RiNotification3Fill,
     RiMailLine,
+    RiMailFill,
     RiUser3Line,
+    RiUser3Fill,
     RiSettings5Line,
+    RiSettings5Fill,
+    RiBookmarkLine,
+    RiBookmarkFill,
+    RiVipCrownLine,
+    RiVipCrownFill,
     RiEdit2Line,
     RiLogoutBoxRLine,
 } from "react-icons/ri";
@@ -63,28 +71,38 @@ export default function LeftSidebar() {
         setIsLogOutOpen(false);
     };
 
+    const isHome = pathname.startsWith("/home");
+    const isExplore = pathname.startsWith("/explore");
+    const isNotifications = pathname.startsWith("/notifications");
+    const isMessages = pathname.startsWith("/messages");
+    const isBookmarks = pathname.startsWith("/bookmarks");
+    const isProfile = token ? pathname.startsWith(`/${token.username}`) : false;
+    const isSettings = pathname.startsWith("/settings");
+
     return (
         <>
             <aside className="left-sidebar">
                 <div className="fixed">
                     <div className="sidebar-content">
-                        <Link href="/explore" className="twitter-icon">
-                            <RiTwitterXFill aria-hidden="true" focusable="false" />
+                        <Link href="/home" className="twitter-icon" aria-label="X Logo">
+                            <svg viewBox="0 0 24 24" aria-hidden="true" width={28} height={28} fill="currentColor" style={{ display: "block" }}>
+                                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                            </svg>
                         </Link>
                         <nav>
                             <ul>
                                 {token && (
                                     <li>
                                         <Link href="/home">
-                                            <div className={`nav-link ${pathname.startsWith("/home") ? "active" : ""}`}>
-                                                <RiHome5Line /> <span className="nav-title">{t("nav.home")}</span>
+                                            <div className={`nav-link ${isHome ? "active" : ""}`}>
+                                                {isHome ? <RiHome5Fill /> : <RiHome5Line />} <span className="nav-title">{t("nav.home")}</span>
                                             </div>
                                         </Link>
                                     </li>
                                 )}
                                 <li>
                                     <Link href="/explore">
-                                        <div className={`nav-link ${pathname.startsWith("/explore") ? "active" : ""}`}>
+                                        <div className={`nav-link ${isExplore ? "active" : ""}`}>
                                             <RiHashtag /> <span className="nav-title">{t("nav.explore")}</span>
                                         </div>
                                     </Link>
@@ -93,13 +111,9 @@ export default function LeftSidebar() {
                                     <>
                                         <li>
                                             <Link href="/notifications">
-                                                <div
-                                                    className={`nav-link ${
-                                                        pathname.startsWith("/notifications") ? "active" : ""
-                                                    }`}
-                                                >
+                                                <div className={`nav-link ${isNotifications ? "active" : ""}`}>
                                                     <div className="badge-wrapper">
-                                                        <RiNotification3Line /> <UnreadNotificationsBadge />
+                                                        {isNotifications ? <RiNotification3Fill /> : <RiNotification3Line />} <UnreadNotificationsBadge />
                                                     </div>
                                                     <span className="nav-title">{t("nav.notifications")}</span>
                                                 </div>
@@ -107,19 +121,32 @@ export default function LeftSidebar() {
                                         </li>
                                         <li>
                                             <Link href="/messages">
-                                                <div className={`nav-link ${pathname.startsWith("/messages") ? "active" : ""}`}>
-                                                    <RiMailLine /> <span className="nav-title">{t("nav.messages")}</span>
+                                                <div className={`nav-link ${isMessages ? "active" : ""}`}>
+                                                    <div className="badge-wrapper">
+                                                        {isMessages ? <RiMailFill /> : <RiMailLine />}
+                                                    </div>
+                                                    <span className="nav-title">{t("nav.messages")}</span>
+                                                </div>
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <Link href="/bookmarks">
+                                                <div className={`nav-link ${isBookmarks ? "active" : ""}`}>
+                                                    {isBookmarks ? <RiBookmarkFill /> : <RiBookmarkLine />} <span className="nav-title">Bookmarks</span>
+                                                </div>
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <Link href="/settings">
+                                                <div className={`nav-link ${isSettings && pathname.includes("premium") ? "active" : ""}`}>
+                                                    <RiVipCrownLine /> <span className="nav-title">Premium</span>
                                                 </div>
                                             </Link>
                                         </li>
                                         <li>
                                             <Link href={`/${token.username}`}>
-                                                <div
-                                                    className={`nav-link ${
-                                                        pathname.startsWith(`/${token.username}`) ? "active" : ""
-                                                    }`}
-                                                >
-                                                    <RiUser3Line /> <span className="nav-title">{t("nav.profile")}</span>
+                                                <div className={`nav-link ${isProfile ? "active" : ""}`}>
+                                                    {isProfile ? <RiUser3Fill /> : <RiUser3Line />} <span className="nav-title">{t("nav.profile")}</span>
                                                 </div>
                                             </Link>
                                         </li>
@@ -127,8 +154,8 @@ export default function LeftSidebar() {
                                 )}
                                 <li>
                                     <Link href="/settings">
-                                        <div className={`nav-link ${pathname.startsWith("/settings") ? "active" : ""}`}>
-                                            <RiSettings5Line /> <span className="nav-title">{t("nav.settings")}</span>
+                                        <div className={`nav-link ${isSettings ? "active" : ""}`}>
+                                            {isSettings ? <RiSettings5Fill /> : <RiSettings5Line />} <span className="nav-title">{t("nav.settings")}</span>
                                         </div>
                                     </Link>
                                 </li>
@@ -136,8 +163,8 @@ export default function LeftSidebar() {
                         </nav>
                         {token && (
                             <>
-                                <button onClick={handleNewTweetClick} className="btn btn-tweet">
-                                    {t("actions.tweet")}
+                                <button onClick={handleNewTweetClick} className="btn btn-tweet" style={{ backgroundColor: "#1d9bf0", color: "#ffffff", fontWeight: 800 }}>
+                                    Post
                                 </button>
                                 <button onClick={handleAnchorClick} className="side-profile">
                                     <div>

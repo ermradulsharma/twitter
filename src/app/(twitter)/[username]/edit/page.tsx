@@ -17,9 +17,8 @@ export default function EditPage({ params }: { params: Promise<{ username: strin
     if (username !== token.username) throw new Error("You are not authorized to view this page");
 
     return (
-        <div>
-            <BackToArrow title={username} url={`/${username}`} />
+        <main className="x-edit-profile-container">
             <EditProfile profile={token} refreshToken={refreshToken} />
-        </div>
+        </main>
     );
 }

@@ -1,12 +1,16 @@
+"use client";
+
 import { useRef, useState } from "react";
 import { useFormik } from "formik";
 import { useQueryClient } from "@tanstack/react-query";
-import { Avatar, TextField, Switch, FormControlLabel } from "@mui/material";
+import { Avatar, TextField, Switch, FormControlLabel, Button, Typography, IconButton, Stack, Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { MdOutlineAddAPhoto } from "react-icons/md";
-import { FaTwitter } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
+import { RiArrowLeftLine } from "react-icons/ri";
 import * as yup from "yup";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 import { UserProps } from "@/types/UserProps";
 import CircularLoading from "../misc/CircularLoading";
@@ -28,24 +32,28 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
     const [blueInput, setBlueInput] = useState("");
     const [isBlueLoading, setIsBlueLoading] = useState(false);
     const { t } = useTranslation();
+    const router = useRouter();
 
     const headerUploadInputRef = useRef<HTMLInputElement>(null);
     const photoUploadInputRef = useRef<HTMLInputElement>(null);
-
     const queryClient = useQueryClient();
 
-    const handleHeaderChange = (event: any) => {
-        const file = event.target.files[0];
-        setHeaderPreview(URL.createObjectURL(file));
-        setHeaderFile(file);
+    const handleHeaderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            setHeaderPreview(URL.createObjectURL(file));
+            setHeaderFile(file);
+        }
     };
     const handleHeaderClick = () => {
         headerUploadInputRef.current?.click();
     };
-    const handlePhotoChange = (event: any) => {
-        const file = event.target.files[0];
-        setPhotoPreview(URL.createObjectURL(file));
-        setPhotoFile(file);
+    const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            setPhotoPreview(URL.createObjectURL(file));
+            setPhotoFile(file);
+        }
     };
     const handlePhotoClick = () => {
         photoUploadInputRef.current?.click();
@@ -104,6 +112,7 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
                 });
                 refreshToken();
                 queryClient.invalidateQueries({ queryKey: ["users", profile.username] });
+                router.push(`/${profile.username}`);
             } catch (err: any) {
                 setSnackbar({
                     message: err.message || t("profile.updateFailed"),
@@ -143,251 +152,103 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
         queryClient.invalidateQueries({ queryKey: ["users", profile.username] });
     };
 
-    return (
-        <div className="edit-profile">
-            <div className="profile-header">
-                <div className="get-blue">
-                    <button onClick={() => setIsBlueOpen(true)}>
-                        {t("profile.twitterBlue")} <FaTwitter />
-                    </button>
-                </div>
-                <Image
-                    alt=""
-                    src={
-                        headerPreview
-                            ? headerPreview
-                            : profile.headerUrl
-                                ? getFullURL(profile.headerUrl)
-                                : "/assets/header.jpg"
-                    }
-                    fill
-                    priority
-                    sizes="(max-width: 768px) 100vw, 600px"
-                    style={{ objectFit: "cover" }}
-                />
-                <div>
-                    <button className="icon-hoverable add-photo" onClick={handleHeaderClick}>
-                        <MdOutlineAddAPhoto />
-                    </button>
-                    <input
-                        ref={headerUploadInputRef}
-                        type="file"
-                        style={{ display: "none" }}
-                        onChange={handleHeaderChange}
-                    />
-                </div>
-                <div className="avatar-wrapper">
-                    <Avatar
-                        className="avatar"
-                        sx={{ width: 125, height: 125 }}
-                        alt=""
-                        src={
-                            photoPreview ? photoPreview : profile.photoUrl ? getFullURL(profile.photoUrl) : "/assets/egg.jpg"
-                        }
-                    />
-                    <div>
-                        <button className="icon-hoverable add-photo" onClick={handlePhotoClick}>
-                            <MdOutlineAddAPhoto />
-                        </button>
-                        <input
-                            ref={photoUploadInputRef}
-                            type="file"
-                            style={{ display: "none" }}
-                            onChange={handlePhotoChange}
-                        />
-                    </div>
-                </div>
-            </div>
-            <form onSubmit={formik.handleSubmit}>
-                <div className="input-group">
-                    <h1>{t("profile.editProfile")}</h1>
-                    <div className="input">
-                        <TextField
-                            fullWidth
-                            name="name"
-                            label={t("profile.name")}
-                            value={formik.values.name}
-                            onChange={formik.handleChange}
-                            error={formik.touched.name && Boolean(formik.errors.name)}
-                            helperText={formik.touched.name && formik.errors.name}
-                        />
-                    </div>
-                    <div className="input">
-                        <TextField
-                            fullWidth
-                            name="description"
-                            label={t("profile.description")}
-                            multiline
-                            minRows={3}
-                            value={formik.values.description}
-                            onChange={formik.handleChange}
-                            error={formik.touched.description && Boolean(formik.errors.description)}
-                            helperText={formik.touched.description && formik.errors.description}
-                        />
-                    </div>
-                    <div className="input">
-                        <TextField
-                            fullWidth
-                            name="location"
-                            label={t("profile.location")}
-                            value={formik.values.location}
-                            onChange={formik.handleChange}
-                            error={formik.touched.location && Boolean(formik.errors.location)}
-                            helperText={formik.touched.location && formik.errors.location}
-                        />
-                    </div>
-                    <div className="input">
-                        <TextField
-                            fullWidth
-                            name="website"
-                            label={t("profile.website")}
-                            value={formik.values.website}
-                            onChange={formik.handleChange}
-                            error={formik.touched.website && Boolean(formik.errors.website)}
-                            helperText={formik.touched.website && formik.errors.website}
-                        />
-                    </div>
-                    <div className="input">
-                        <TextField
-                            fullWidth
-                            name="email"
-                            label={t("profile.email")}
-                            value={formik.values.email}
-                            onChange={formik.handleChange}
-                            error={formik.touched.email && Boolean(formik.errors.email)}
-                            helperText={formik.touched.email && formik.errors.email}
-                        />
-                    </div>
-                    <div className="input">
-                        <TextField
-                            fullWidth
-                            name="phone"
-                            label={t("profile.phone")}
-                            value={formik.values.phone}
-                            onChange={formik.handleChange}
-                            error={formik.touched.phone && Boolean(formik.errors.phone)}
-                            helperText={formik.touched.phone && formik.errors.phone}
-                        />
-                    </div>
-                    <div className="input">
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={formik.values.browserNotificationsEnabled}
-                                    onChange={async (event) => {
-                                        const enabled = event.target.checked;
-                                        if (enabled && typeof window !== "undefined" && "Notification" in window) {
-                                            const permission = await Notification.requestPermission();
-                                            if (permission !== "granted") {
-                                                formik.setFieldValue("browserNotificationsEnabled", false);
-                                                setSnackbar({
-                                                    message: "Please allow browser notifications to use this feature.",
-                                                    severity: "error",
-                                                    open: true,
-                                                });
-                                                return;
-                                            }
-                                        }
-                                        if (enabled && typeof window !== "undefined" && !("Notification" in window)) {
-                                            formik.setFieldValue("browserNotificationsEnabled", false);
-                                            setSnackbar({
-                                                message: "Please allow browser notifications to use this feature.",
-                                                severity: "error",
-                                                open: true,
-                                            });
-                                            return;
-                                        }
-                                        formik.setFieldValue("browserNotificationsEnabled", enabled);
-                                    }}
-                                    name="browserNotificationsEnabled"
-                                />
-                            }
-                            label={t("profile.enableBrowserNotifications")}
-                        />
-                    </div>
-                    <div className="input">
-                        <LanguageSelector currentLanguage={profile.preferredLanguage ?? "en"} refreshToken={refreshToken} />
-                    </div>
-                    {formik.isSubmitting ? (
-                        <CircularLoading />
-                    ) : (
-                        <button
-                            className={`btn btn-dark save ${formik.isValid ? "" : "disabled"}`}
+    const avatarSrc = photoPreview ? photoPreview : profile.photoUrl ? getFullURL(profile.photoUrl) : "/assets/egg.jpg";
 
-                            disabled={!formik.isValid}
-                            type="submit"
-                        >
-                            {t("actions.save")}
-                        </button>
-                    )}
-                </div>
-            </form>
-            {snackbar.open && (
-                <CustomSnackbar message={snackbar.message} severity={snackbar.severity} setSnackbar={setSnackbar} />
-            )}
+    return (
+        <Box sx={{ width: "100%", maxWidth: "600px", margin: "0 auto", minHeight: "100vh" }}>
+            <Box component="form" onSubmit={formik.handleSubmit}>
+                {/* Header Navbar */}
+                <Box sx={{ position: "sticky", top: 0, zIndex: 20, backgroundColor: "var(--header-bg)", backdropFilter: "blur(12px)", borderBottom: "1px solid var(--border-color)", px: 2, height: 53, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                        <IconButton onClick={() => router.back()} size="small" sx={{ color: "var(--twitter-black)", "&:hover": { backgroundColor: "var(--hover)" } }} ><RiArrowLeftLine size={20} /></IconButton>
+                        <Typography variant="h6" sx={{ fontWeight: 800, fontSize: "1.2rem", color: "var(--twitter-black)" }}>Edit profile</Typography>
+                    </Box>
+                    <Button type="submit" disabled={!formik.isValid || formik.isSubmitting} sx={{ backgroundColor: "var(--twitter-black)", color: "var(--background-primary)", borderRadius: 999, fontWeight: 800, fontSize: "0.9rem", px: 2.5, py: 0.6, textTransform: "none", boxShadow: "none", "&:hover": { opacity: 0.9, backgroundColor: "var(--twitter-black)" }, "&.Mui-disabled": { opacity: 0.5, backgroundColor: "var(--twitter-black)", color: "var(--background-primary)" } }}>{formik.isSubmitting ? <CircularLoading /> : "Save"}</Button>
+                </Box>
+
+                {/* Banner Upload Area */}
+                <Box sx={{ position: "relative", width: "100%", height: 200, backgroundColor: "#1e2732", overflow: "hidden" }} >
+                    <Image alt="Header Banner" src={headerPreview ? headerPreview : profile.headerUrl ? getFullURL(profile.headerUrl) : "/assets/header.jpg"} fill priority sizes="600px" style={{ objectFit: "cover", opacity: 0.75 }} />
+                    <Box onClick={handleHeaderClick} sx={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", backgroundColor: "rgba(0,0,0,0.3)", }}>
+                        <Box sx={{ width: 44, height: 44, borderRadius: "50%", backgroundColor: "rgba(15, 20, 25, 0.75)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", }}><MdOutlineAddAPhoto size={22} /></Box>
+                    </Box>
+                    <input ref={headerUploadInputRef} type="file" style={{ display: "none" }} onChange={handleHeaderChange} />
+                </Box>
+
+                {/* Avatar Upload & Verification button */}
+                <Box sx={{ px: 2, position: "relative", mb: 3 }}>
+                    <Box sx={{ position: "relative", width: 120, height: 120, marginTop: "-60px", borderRadius: "50%", border: "4px solid var(--background-primary)", overflow: "hidden", backgroundColor: "var(--background-primary)", }}>
+                        <Avatar sx={{ width: "100%", height: "100%" }} alt={profile.name ?? ""} src={avatarSrc} />
+                        <Box onClick={handlePhotoClick} sx={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", backgroundColor: "rgba(0,0,0,0.35)", }}>
+                            <Box sx={{ width: 38, height: 38, borderRadius: "50%", backgroundColor: "rgba(15, 20, 25, 0.75)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", }}><MdOutlineAddAPhoto size={20} /></Box>
+                        </Box>
+                        <input ref={photoUploadInputRef} type="file" style={{ display: "none" }} onChange={handlePhotoChange} />
+                    </Box>
+
+                    <Box sx={{ position: "absolute", top: 12, right: 16 }}>
+                        <Button onClick={() => setIsBlueOpen(true)} variant="outlined" startIcon={<FaXTwitter />} sx={{ borderRadius: 999, textTransform: "none", fontWeight: 700, fontSize: "0.85rem", color: "var(--twitter-black)", borderColor: "var(--border-color)", "&:hover": { borderColor: "var(--twitter-black)", backgroundColor: "var(--hover)" }, }}>{profile.isPremium ? "Verified Member" : "Get Verified"}</Button>
+                    </Box>
+                </Box>
+
+                {/* Form Fields */}
+                <Box sx={{ px: 2, display: "flex", flexDirection: "column", gap: 2.5, pb: 6 }}>
+                    <TextField fullWidth name="name" label="Name" value={formik.values.name} onChange={formik.handleChange} onBlur={formik.handleBlur} error={formik.touched.name && Boolean(formik.errors.name)} helperText={formik.touched.name && formik.errors.name} sx={{ "& .MuiOutlinedInput-root": { color: "var(--twitter-black)", borderRadius: "8px", "& fieldset": { borderColor: "var(--border-color)" }, "&:hover fieldset": { borderColor: "var(--twitter-muted)" }, "&.Mui-focused fieldset": { borderColor: "#1d9bf0" }, }, "& .MuiInputLabel-root": { color: "var(--twitter-muted)" }, }} />
+                    <TextField fullWidth name="description" label="Bio" multiline minRows={3} value={formik.values.description} onChange={formik.handleChange} onBlur={formik.handleBlur} error={formik.touched.description && Boolean(formik.errors.description)} helperText={formik.touched.description && formik.errors.description} sx={{ "& .MuiOutlinedInput-root": { color: "var(--twitter-black)", borderRadius: "8px", "& fieldset": { borderColor: "var(--border-color)" }, "&:hover fieldset": { borderColor: "var(--twitter-muted)" }, "&.Mui-focused fieldset": { borderColor: "#1d9bf0" }, }, "& .MuiInputLabel-root": { color: "var(--twitter-muted)" }, }} />
+                    <TextField fullWidth name="location" label="Location" value={formik.values.location} onChange={formik.handleChange} onBlur={formik.handleBlur} error={formik.touched.location && Boolean(formik.errors.location)} helperText={formik.touched.location && formik.errors.location} sx={{ "& .MuiOutlinedInput-root": { color: "var(--twitter-black)", borderRadius: "8px", "& fieldset": { borderColor: "var(--border-color)" }, "&:hover fieldset": { borderColor: "var(--twitter-muted)" }, "&.Mui-focused fieldset": { borderColor: "#1d9bf0" }, }, "& .MuiInputLabel-root": { color: "var(--twitter-muted)" }, }} />
+                    <TextField fullWidth name="website" label="Website" value={formik.values.website} onChange={formik.handleChange} onBlur={formik.handleBlur} error={formik.touched.website && Boolean(formik.errors.website)} helperText={formik.touched.website && formik.errors.website} sx={{ "& .MuiOutlinedInput-root": { color: "var(--twitter-black)", borderRadius: "8px", "& fieldset": { borderColor: "var(--border-color)" }, "&:hover fieldset": { borderColor: "var(--twitter-muted)" }, "&.Mui-focused fieldset": { borderColor: "#1d9bf0" }, }, "& .MuiInputLabel-root": { color: "var(--twitter-muted)" }, }} />
+                    <TextField fullWidth name="email" label="Email" value={formik.values.email} onChange={formik.handleChange} onBlur={formik.handleBlur} error={formik.touched.email && Boolean(formik.errors.email)} helperText={formik.touched.email && formik.errors.email} sx={{ "& .MuiOutlinedInput-root": { color: "var(--twitter-black)", borderRadius: "8px", "& fieldset": { borderColor: "var(--border-color)" }, "&:hover fieldset": { borderColor: "var(--twitter-muted)" }, "&.Mui-focused fieldset": { borderColor: "#1d9bf0" }, }, "& .MuiInputLabel-root": { color: "var(--twitter-muted)" }, }} />
+                    <TextField fullWidth name="phone" label="Phone" value={formik.values.phone} onChange={formik.handleChange} onBlur={formik.handleBlur} error={formik.touched.phone && Boolean(formik.errors.phone)} helperText={formik.touched.phone && formik.errors.phone} sx={{ "& .MuiOutlinedInput-root": { color: "var(--twitter-black)", borderRadius: "8px", "& fieldset": { borderColor: "var(--border-color)" }, "&:hover fieldset": { borderColor: "var(--twitter-muted)" }, "&.Mui-focused fieldset": { borderColor: "#1d9bf0" }, }, "& .MuiInputLabel-root": { color: "var(--twitter-muted)" }, }} />
+                    <Box sx={{ border: "1px solid var(--border-color)", borderRadius: "8px", p: 2 }}>
+                        <FormControlLabel control={<Switch checked={formik.values.browserNotificationsEnabled} onChange={async (event) => {
+                            const enabled = event.target.checked;
+                            if (enabled && typeof window !== "undefined" && "Notification" in window) {
+                                const permission = await Notification.requestPermission();
+                                if (permission !== "granted") {
+                                    formik.setFieldValue("browserNotificationsEnabled", false);
+                                    setSnackbar({
+                                        message: "Please allow browser notifications to use this feature.",
+                                        severity: "error",
+                                        open: true,
+                                    });
+                                    return;
+                                }
+                            }
+                            formik.setFieldValue("browserNotificationsEnabled", enabled);
+                        }} name="browserNotificationsEnabled" />} label={<Typography sx={{ color: "var(--twitter-black)", fontSize: "0.95rem", fontWeight: 600 }}>Enable Browser Notifications</Typography>} />
+                    </Box>
+                    <Box sx={{ border: "1px solid var(--border-color)", borderRadius: "8px", p: 2 }}>
+                        <Typography sx={{ color: "var(--twitter-muted)", fontSize: "0.85rem", mb: 1, fontWeight: 600 }}>Preferred Language</Typography>
+                        <LanguageSelector currentLanguage={profile.preferredLanguage ?? "en"} refreshToken={refreshToken} />
+                    </Box>
+                </Box>
+            </Box>
+            {snackbar.open && <CustomSnackbar message={snackbar.message} severity={snackbar.severity} setSnackbar={setSnackbar} />}
             {isBlueOpen && (
-                <div className="html-modal-wrapper">
-                    <dialog open className="get-blue-modal">
+                <Box sx={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, zIndex: 1300, backgroundColor: "rgba(91, 112, 131, 0.4)", display: "flex", alignItems: "center", justifyContent: "center", p: 2, }}>
+                    <Box sx={{ backgroundColor: "var(--background-primary)", borderRadius: "16px", maxWidth: 400, width: "100%", p: 3, border: "1px solid var(--border-color)", }}>
                         {profile.isPremium ? (
-                            <div className="blue-user">
-                                <Image src="/assets/favicon.png" alt="" width={75} height={75} />
-                                <h1>{t("profile.alreadyBlue")}</h1>
-                                <p>{t("profile.thanks")}</p>
-                                <button
-                                    className="btn btn-white"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        setIsBlueOpen(false);
-                                    }}
-                                >
-                                    {t("actions.close")}
-                                </button>
-                            </div>
+                            <Box sx={{ textAlign: "center" }}>
+                                <Image src="/assets/favicon.png" alt="" width={60} height={60} />
+                                <Typography variant="h6" sx={{ fontWeight: 800, mt: 1, color: "var(--twitter-black)" }}>You&apos;re verified!</Typography>
+                                <Typography variant="body2" sx={{ color: "var(--twitter-muted)", my: 1 }}>Thank you for supporting X Premium.</Typography>
+                                <Button fullWidth variant="outlined" onClick={() => setIsBlueOpen(false)} sx={{ mt: 2, borderRadius: 999, textTransform: "none", fontWeight: 700 }}>Close</Button>
+                            </Box>
                         ) : (
                             <>
-                                <h1>
-                                    {t("profile.wantBlue")} <FaTwitter />
-                                </h1>
-                                <p>{t("profile.blueDescription")}</p>
-                                <p>
-                                    {t("profile.blueCodeInfo")}
-                                    <a href="https://github.com/ermradulsharma/twitter" target="_blank">
-                                        {" "}
-                                        {t("profile.here")}{" "}
-                                    </a>
-                                    if you want.
-                                </p>
-                                {isBlueLoading ? (
-                                    <CircularLoading />
-                                ) : (
-                                    <form onSubmit={handleBlueSubmit}>
-                                        <input
-                                            type="text"
-                                            className="blue-input"
-                                            onChange={(e) => setBlueInput(e.target.value)}
-                                            value={blueInput}
-                                            placeholder={t("profile.enterCode")}
-                                            autoFocus
-                                        />
-                                        <button className="btn btn-dark" type="submit">
-                                            {t("actions.submit")}
-                                        </button>
-                                        <button
-                                            className="btn btn-white"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                setIsBlueOpen(false);
-                                            }}
-                                        >
-                                            {t("actions.close")}
-                                        </button>
-                                    </form>
-                                )}
+                                <Typography variant="h6" sx={{ fontWeight: 800, color: "var(--twitter-black)", mb: 1 }}>Get Verified with X Blue <FaXTwitter /></Typography>
+                                <Typography variant="body2" sx={{ color: "var(--twitter-muted)", mb: 2 }}>Enter your verification code to activate your blue tick.</Typography>
+                                <Box component="form" onSubmit={handleBlueSubmit}>
+                                    <TextField fullWidth placeholder="Enter verification code" size="small" value={blueInput} onChange={(e) => setBlueInput(e.target.value)} sx={{ mb: 2, "& .MuiOutlinedInput-root": { color: "var(--twitter-black)", borderRadius: "8px", "& fieldset": { borderColor: "var(--border-color)" }, }, }} autoFocus />
+                                    <Stack spacing={1}>
+                                        <Button type="submit" variant="contained" disabled={isBlueLoading} sx={{ borderRadius: 999, textTransform: "none", fontWeight: 700, backgroundColor: "#1d9bf0" }}>{isBlueLoading ? <CircularLoading /> : "Submit"}</Button>
+                                        <Button variant="outlined" onClick={() => setIsBlueOpen(false)} sx={{ borderRadius: 999, textTransform: "none", fontWeight: 700 }}>Cancel</Button>
+                                    </Stack>
+                                </Box>
                             </>
                         )}
-                    </dialog>
-                </div>
+                    </Box>
+                </Box>
             )}
-        </div>
+        </Box>
     );
 }
