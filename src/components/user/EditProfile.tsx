@@ -45,9 +45,11 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
             setHeaderFile(file);
         }
     };
+
     const handleHeaderClick = () => {
         headerUploadInputRef.current?.click();
     };
+
     const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
@@ -55,19 +57,20 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
             setPhotoFile(file);
         }
     };
+
     const handlePhotoClick = () => {
         photoUploadInputRef.current?.click();
     };
 
     const validationSchema = yup.object({
         name: yup.string().max(50, "Name should be of maximum 50 characters length."),
-        email: yup.string().email("Email is invalid").required("Email is required."),
-        phone: yup.string().required("Phone is required."),
-        description: yup.string().max(160, "Description should be of maximum 160 characters length."),
-        location: yup.string().max(50, "Location should be of maximum 50 characters length."),
-        website: yup.string().max(50, "Website should be of maximum 50 characters length."),
-        photoUrl: yup.string(),
-        headerUrl: yup.string(),
+        email: yup.string().email("Email is invalid").nullable(),
+        phone: yup.string().nullable(),
+        description: yup.string().max(160, "Description should be of maximum 160 characters length.").nullable(),
+        location: yup.string().max(50, "Location should be of maximum 50 characters length.").nullable(),
+        website: yup.string().max(50, "Website should be of maximum 50 characters length.").nullable(),
+        photoUrl: yup.string().nullable(),
+        headerUrl: yup.string().nullable(),
         browserNotificationsEnabled: yup.boolean(),
     });
 
@@ -83,6 +86,7 @@ export default function EditProfile({ profile, refreshToken }: { profile: UserPr
             photoUrl: profile.photoUrl ?? "",
             browserNotificationsEnabled: profile.browserNotificationsEnabled ?? false,
         },
+        enableReinitialize: true,
         validationSchema: validationSchema,
         onSubmit: async (values) => {
             try {

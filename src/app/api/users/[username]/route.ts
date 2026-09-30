@@ -24,6 +24,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
                 subscriptionPlan: true,
                 subscriptionExpiry: true,
                 monthlyTweetCount: true,
+                email: true,
+                phone: true,
                 photoUrl: true,
                 headerUrl: true,
                 followers: {
